@@ -17,6 +17,9 @@
 
 			<!-- Header -->
                 <?php echo $header_index.$header_general; ?>
+			
+			<!-- Spinner -->
+				<div id="spinner_target"></div>
 
 			<!-- Banner -->
 				<section id="banner">

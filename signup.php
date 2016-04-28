@@ -18,6 +18,9 @@
 			<!-- Header -->
 				<?php echo $header_page.$header_general; ?>
 
+			<!-- Spinner -->
+				<div id="spinner_target"></div>
+
 			<!-- Main -->
 				<section id="main" class="container">
 					<header>

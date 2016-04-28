@@ -9,7 +9,12 @@
 
 	if ($_REQUEST['email'] && $_REQUEST['pass']){
 		
-		$account->newUser($_REQUEST['email'], $_REQUEST['pass']);
+		$ok = $account->doLogin($_REQUEST['email'], $_REQUEST['pass']);
+
+		if ($ok){
+			$_SESSION['user_id'] = $account->user_id;
+			$_SESSION['user_email'] = $account->user_email;
+		}
 
 		echo $account->message;
 

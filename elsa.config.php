@@ -16,16 +16,18 @@
 									    <li><a href='contact.html'>Documentation</a></li>
 								    </ul>
 							    </li>";
-    if ($_SESSION['id_utente'])
+    if ($_SESSION['user_id'] && $_SESSION['user_email'])
         $header_general .= "    <li>
-								    <a href='#' class='icon fa-angle-down'>".$_SESSION['username']."</a>
+								    <a href='#' class='icon fa-angle-down'>".$_SESSION['user_email']."</a>
 								    <ul>
                                         <li><a href='contact.html'>User Profile</a></li>
 									    <li><a href='generic.html'>Your API Key</a></li>
+										<li><a href='#' onclick='logout();'>Logout</a></li>
 								    </ul>
 							    </li>";
     else
-        $header_general .= "    <li><a href='signup.php' class='button'>Sign Up</a></li>";
+        $header_general .= "    <li><a href='login.php'>Login</a></li>
+								<li><a href='signup.php'>Sign Up</a></li>";
 
     $header_general .= "    </ul>
 					     </nav>
@@ -42,7 +44,9 @@
 			            <!--[if lte IE 8]><script src='js/ie/respond.min.js'></script><![endif]-->
                         <!--[if lte IE 8]><script src='js/ie/html5shiv.js'></script><![endif]-->
 			            <script src='js/main.js'></script>
-                        <script src='js/signup.js'></script>";
+						<script src='js/spin.js'></script>
+						<script src='js/jquery.spin.js'></script>
+                        <script src='js/account_manage.js'></script>";
 
     // Page footer.
     $footer         = " <footer id='footer'>
