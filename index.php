@@ -24,7 +24,7 @@
 			<!-- Banner -->
 				<section id="banner">
 					<h2>ELSA</h2>
-					<p>Enhanced cross-Lingual Semantic Annotator</p>
+					<p>Embeddable cross-Lingual Semantic Annotator</p>
 					<ul class="actions">
 						<li><a href="signup.php" class="button special">Sign Up</a></li>
 						<li><a href="#main" class="button">Learn More</a></li>

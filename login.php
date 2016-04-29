@@ -25,7 +25,7 @@
 				<section id="main" class="container">
 					<header>
 						<h2>ELSA</h2>
-						<p>Enhanced cross-Lingual Semantic Annotator</p>
+						<p>Embeddable cross-Lingual Semantic Annotator</p>
 					</header>
 					<div class="row">
 						<div class="12u">
