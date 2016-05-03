@@ -9,8 +9,9 @@
 					     <nav id='nav'>
 						    <ul>
 							    <li><a href='index.php'>Home</a></li>
+								<li><a href='api/test.php'>Test</a></li>
 							    <li>
-								    <a href='#' class='icon fa-angle-down'>API</a>
+									<a href='#' class='icon fa-angle-down'>API</a>
 								    <ul>
 									    <li><a href='generic.html'>How to get API Key</a></li>
 									    <li><a href='contact.html'>Documentation</a></li>
@@ -51,7 +52,7 @@
     // Page footer.
     $footer         = " <footer id='footer'>
 					     <ul class='icons'>
-						    <li><a href='#' class='icon fa-github'><span class='label'>Github</span></a></li>
+						    <li><a href='https://github.com/forlandi3/elsa' class='icon fa-github' target='_blank'><span class='label'>Github</span></a></li>
 					     </ul>
 					     <ul class='copyright'>
 						    <li>&copy; 2016. </li><li>Design: Federico Orlandi</li>

@@ -88,6 +88,7 @@ function register(){
 			async: false,
 			error: function (richiesta, stato, errore) {
 				alert("Error during server connection, please retry. " + errore + stato + richiesta);
+				$('#spinner_target').spin(false);
 			},
 			success: function (data, stato) {
 				if (data.search("Error") >= 0) {
@@ -170,6 +171,7 @@ function login(){
         	async: false,
         	error: function (richiesta, stato, errore) {
         		alert("Error during server connection, please retry. " + errore + stato + richiesta);
+				$('#spinner_target').spin(false);
         	},
         	success: function (data, stato) {
         		if (data.search("Error") >= 0) {

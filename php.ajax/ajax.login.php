@@ -2,8 +2,8 @@
 
     session_start();
 
-	include("../classi/mysqli.connect.php");
-	include("../classi/account.class.php");
+	include("../classes/mysqli.connect.php");
+	include("../classes/registration.class.php");
 
 	$account = new Account($mysqli);
 
