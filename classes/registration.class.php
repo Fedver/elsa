@@ -13,6 +13,10 @@
 						009 URL format is not valid
 						010 no URL specified
 						011 BabelNet connection failed
+						012 method is not valid
+						013 parameters are not valid
+						014 conflictual settings
+						015 required attribute not found
 
 
 	*/

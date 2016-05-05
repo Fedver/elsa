@@ -1,11 +1,19 @@
 <?php
 	
 	include("classes/babelnetrequest.class.php");
+	include("classes/bingtranslaterequest.class.php");
 
 	$bn = new BabelNetRequest();
-	$string = $bn->getSenseByWord($_REQUEST['word'], "IT", "EN");
+	$mt = new BingTranslateRequest();
+
+	$string = $mt->translate($_REQUEST['word'], "it", "en");
+	//$string = $mt->detect($_REQUEST['word']);
+
+	echo $string;
+	echo "<br>";
+	//$string = $bn->getSenseByWord($_REQUEST['word'], "IT", "EN");
 	
-	foreach($string as $result) {
+	/*foreach($string as $result) {
 		echo "	Lemma ".$result['language'].": ".$result['lemma']."<br/>
 				Source: ".$result['source']."<br/>
 				ID: ".$result['synsetID']['id']."<br/>
@@ -27,10 +35,12 @@
 			echo "	Gloss: ".$result2['gloss']."<br/>";
 		}
 		echo "<br>";
-	}
+	}*/
 
 	//echo var_export($string);
 
-	echo $bn->HTMLizeErrlog();
+	//echo $bn->HTMLizeErrlog();
+
+	//echo $mt->HTMLizeErrlog();
 
 ?>

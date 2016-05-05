@@ -8,7 +8,7 @@
 	*/
 
 	// Includes.
-	include("httprequest.class.php");
+	require_once("httprequest.class.php");
 
 	
 	class BabelNetRequest {
@@ -85,7 +85,7 @@
 
 		// Checks the connection with BabelNet.
 		// Returns TRUE if it's all ok and FALSE otherwise.
-		// Also retrieve BabelNet current version, stored in $this->bn_version.
+		// Also retrieves BabelNet current version, stored in $this->bn_version.
 		private function checkConnection(){
 			
 			$request = $this->url.$this->getMode("version")."?".$this->key_string;
