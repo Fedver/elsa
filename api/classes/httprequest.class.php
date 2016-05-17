@@ -167,6 +167,11 @@
 		}
 
 
+		public function getUrl(){
+			return $this->url;
+		}
+
+
 		// Sets the method used by the HTTP request, GET or POST.
 		// Returns TRUE if it's all ok and FALSE otherwise.
 		public function setMethod($method){

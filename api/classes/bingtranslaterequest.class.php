@@ -39,7 +39,7 @@
 			$this->client_id		= "FedversELSA";
 			$this->client_secret	= "6279886fde090b3038f267098bcca771a6efa946";
 			$this->grant_type		= "client_credentials";
-			$this->service_name		= "Microsoft Translator";
+			$this->service_name		= "Microsoft Translator v2";
 			$this->authUrl			= "https://datamarket.accesscontrol.windows.net/v2/OAuth2-13";
 			$this->url				= "http://api.microsofttranslator.com";
 			$this->apiUrl			= "/v2/Http.svc/";
@@ -54,7 +54,7 @@
 				$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
 				$this->status	= TRUE;
 			}else{
-				$this->message	= "Error code 011: Microsoft Translator connection failed. [BingTranslateRequest.BingTranslateRequest]";
+				$this->message	= "Error code 016: Microsoft Translator token not valid. [BingTranslateRequest.BingTranslateRequest]";
 				$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
 				$this->status	= FALSE;
 				return FALSE;
@@ -74,7 +74,8 @@
 			
 			$this->query_modes = array(	"detect"			=> "Detect",
 										"translate"			=> "Translate",
-										"languages"			=> "getLanguagesForTranslations"
+										"languages"			=> "getLanguagesForTranslations",
+										"translates"		=> "GetTranslations"
 									);
 		}
 
@@ -130,18 +131,23 @@
 		}
 
 
-		// Perform a translation request.
-		public function translate($word, $source_lang, $dest_lang){
+		// Perform a translation request to retrieve ad array of possible translations.
+		public function translate($word, $source_lang, $dest_lang, $max=4, $domain="general"){
 			
 			$paramArr = array (
-									 'text'		=> urlencode($word),
-									 'from'		=> $source_lang,
-									 'to'		=> $dest_lang
+									 'text'				=> urlencode($word),
+									 'from'				=> $source_lang,
+									 'to'				=> $dest_lang,
+									 'maxTranslations'	=> $max
+									 /*'options'			=> "{'Category': '".$domain."'}"*/
             );
 			$paramArr = http_build_query($paramArr);
-
-			$this->http->setURL($this->url.$this->apiUrl.$this->getMode("translate")."?".$paramArr);
+			$this->http->setPostRequest($paramArr);
+			$this->http->setURL($this->url.$this->apiUrl.$this->getMode("translates"));
+			echo $this->http->getUrl();
 			$response = $this->http->send(FALSE);
+
+			echo $this->http->HTMLizeErrlog();
 
 			return $response;
 
@@ -173,6 +179,24 @@
 			$paramArr = http_build_query($paramArr);
 
 			$this->http->setURL($this->url.$this->apiUrl.$this->getMode("languages")."?".$paramArr);
+			$response = $this->http->send(FALSE);
+
+			return $response;
+
+		}
+
+
+		// Perform a translation request to retrieve a single translation.
+		public function translateSingle($word, $source_lang, $dest_lang){
+			
+			$paramArr = array (
+									 'text'		=> urlencode($word),
+									 'from'		=> $source_lang,
+									 'to'		=> $dest_lang
+            );
+			$paramArr = http_build_query($paramArr);
+
+			$this->http->setURL($this->url.$this->apiUrl.$this->getMode("translate")."?".$paramArr);
 			$response = $this->http->send(FALSE);
 
 			return $response;

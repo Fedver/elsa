@@ -17,6 +17,8 @@
 						013 parameters are not valid
 						014 conflictual settings
 						015 required attribute not found
+						016 Microsoft Translator token not valid
+						017 header is an array
 
 
 	*/
