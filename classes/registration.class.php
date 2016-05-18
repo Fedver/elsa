@@ -19,6 +19,7 @@
 						015 required attribute not found
 						016 Microsoft Translator token not valid
 						017 header is an array
+						018 no synset found
 
 
 	*/

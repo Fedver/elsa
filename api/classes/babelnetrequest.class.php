@@ -111,10 +111,12 @@
 		}
 		
 		
+		// Requests the sense of a given word.
+		// Returns the response.
 		public function getSenseByWord($word, $source_lang, $dest_lang=NULL){
 
 			if (!$word || !$source_lang){
-				$this->message	= "Error code 001: missing parameters (word or source language). [BabelNetRequest.getSense]";
+				$this->message	= "Error code 001: missing parameters (word or source language). [BabelNetRequest.getSenseByWord]";
 				$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
 				$this->status	= FALSE;
 				return FALSE;
@@ -140,10 +142,12 @@
 		}
 
 
+		// Requests information of a synset given its ID.
+		// Returns the response.
 		public function getSynsetByID($id, $dest_lang=NULL){
 
 			if (!$id){
-				$this->message	= "Error code 001: missing parameters (id). [BabelNetRequest.getSynset]";
+				$this->message	= "Error code 001: missing parameters (id). [BabelNetRequest.getSynsetByID]";
 				$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
 				$this->status	= FALSE;
 				return FALSE;
@@ -155,6 +159,32 @@
 											"key"				=> $this->api_key
 									);
 				$request = $this->url.$this->getMode("synset_by_id")."?".http_build_query($params);
+				//echo $request."<br>";
+				$this->http->setURL($request);
+				$response = $this->http->send(TRUE);
+
+				return $response;
+			}
+		}
+
+
+		// Requests all the synset IDs of a given word.
+		// Returns the response.
+		public function getSynsetByWord($word, $source_lang){
+
+			if (!$word){
+				$this->message	= "Error code 001: missing parameters (word). [BabelNetRequest.getSynsetByWord]";
+				$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
+				$this->status	= FALSE;
+				return FALSE;
+			}else{
+
+				$params = array (
+											"word"				=> $word,
+											"langs"				=> $source_lang,
+											"key"				=> $this->api_key
+									);
+				$request = $this->url.$this->getMode("synsid_by_word")."?".http_build_query($params);
 				//echo $request."<br>";
 				$this->http->setURL($request);
 				$response = $this->http->send(TRUE);

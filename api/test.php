@@ -1,6 +1,7 @@
 <?php
 	
 $selectvalues = array(
+						"Apparizione;DataDiNascita",
 						"Nome;Cognome;Soprannome;Lingua;DataDiNascita;LuogoDiNascita;Apparizione",
 						"Nome;\"Cognome\";Soprannome;Lingua;DataDiNascita;LuogoDiNascita;Apparizione"
 

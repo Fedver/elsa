@@ -54,7 +54,7 @@
 
 		//echo $_REQUEST['header'].", ".chr($_REQUEST['separator']).", ".chr($_REQUEST['delimiter'])."<br>";
 
-		var_dump($p->header_token);
+		//var_dump($p->header_token);
 
 		/*foreach ($p->header_token as $element){
 			echo $element['header']." -> ".$element['token']."<br>";

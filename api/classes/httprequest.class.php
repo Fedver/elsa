@@ -69,7 +69,7 @@
 		
 		
 		// Send a cURL request.
-		// Returns an associative array containing the message received or FALSE in case of errors.
+		// Returns the message received or FALSE in case of errors.
 		// $type indicates output type. FALSE -> JSON string, TRUE -> associative array decoded from the JSON string.
 		public function send($type=TRUE){
 
