@@ -2,9 +2,9 @@
 	
 $selectvalues = array(
 						"Nome",
-						"Apparizione;DataDiNascita",
+						"Nome;Apparizione",
 						"Nome;Cognome;Soprannome;Lingua;DataDiNascita;LuogoDiNascita;Apparizione",
-						"Nome;\"Cognome\";Soprannome;Lingua;DataDiNascita;LuogoDiNascita;Apparizione"
+						"Nome;Stato;FusoOrario;cap;prefisso;Popolazione;Anno;Superficie;Sindaco;Latitudine;Longitudine;Altitudine;Website"
 
 					);
 

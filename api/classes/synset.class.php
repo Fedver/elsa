@@ -107,15 +107,15 @@
 				if ($this->filter_results && in_array($response['synsetType'], $this->filter)){
 
 					foreach ($response['senses'] as $row){
-						$this->synset_array[$k]['lemma'][] = strtolower($row['lemma']);
+						$this->synset_array[$k]['lemma'][] = str_replace("_", " ", strtolower($row['lemma']));
 						$this->synset_array[$k]['source'][] = $row['source'];
 					}
 
 					foreach ($response['categories'] as $row)
-						$this->synset_array[$k]['category'][] = strtolower($row['category']);
+						$this->synset_array[$k]['category'][] = str_replace("_", " ", strtolower($row['category']));
 
 					foreach ($response['domains'] as $key => $value){
-						$this->synset_array[$k]['domain'][] = strtolower($key);
+						$this->synset_array[$k]['domain'][] = str_replace("_", " ", strtolower($key));
 						$this->synset_array[$k]['weight'][] = $value;
 					}
 
