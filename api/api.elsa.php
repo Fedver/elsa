@@ -8,10 +8,10 @@
 		$bn = new BabelNetRequest();
 		$mt = new BingTranslateRequest();
 
-		$string = $mt->translate($_REQUEST['word'], "it", "en");
+		$string = $mt->translateSingle($_REQUEST['word'], "it", "en");
 		//$string = $mt->detect($_REQUEST['word']);
 
-		var_dump($string);
+		//var_dump($string);
 
 		echo $string;
 		echo "<br>";
@@ -45,7 +45,7 @@
 
 		//echo $bn->HTMLizeErrlog();
 
-		echo $mt->HTMLizeErrlog();
+		//echo $mt->HTMLizeErrlog();
 	}elseif ($_REQUEST['mode'] == "compute"){
 
 		require("classes/parser.class.php");

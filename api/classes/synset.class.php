@@ -15,10 +15,10 @@
 	class Synset {
 		
 		// Internal service attributes.
-		private $word, $source_lang, $dest_lang;
+		private $word, $source_lang, $dest_lang, $filter_results, $filter;
 
 		// Public attributes.
-		public $synset_source, $synset_array, $categ_array, $dom_array;
+		public $synset_source, $synset_array, $categ_array, $dom_array, $sources_array, $dist_domains, $dist_categs;
 
 		// Output attributes.
 		public $message, $errlog, $status;
@@ -38,7 +38,9 @@
 				$this->word				= $word;
 				$this->source_lang		= $source_lang;
 				$this->dest_lang		= $dest_lang;
-				$this->synset_sounce = NULL;
+				$this->synset_sounce	= NULL;
+				$this->filter_results	= TRUE;
+				$this->filter			= array("CONCEPT");
 				$this->getSynset();
 				if (is_array($this->synset_source)){
 					$this->message			= "Class Synset (".$word.") instanced successfully. [Synset.Synset]";
@@ -79,7 +81,6 @@
 			}
 		}
 
-
 		//////////////////////////////////////////////////////////////////////////////////////////
 		//																						//
 		//									PUBLIC METHODS										//
@@ -97,26 +98,30 @@
 		public function getSynsetArray(){
 			
 			$bn = new BabelNetRequest();
+			$k	= 0;
 
-			foreach ($this->synset_source['sid'] as $i => $synonym_id){
+			foreach ($this->synset_source['sid'] as $synonym_id){
 				
 				$response = $bn->getSynsetByID($synonym_id, $this->dest_lang);
 
-				foreach ($response['senses'] as $row)
-					$this->synset_array[$i][] = $row['lemma'];
+				if ($this->filter_results && in_array($response['synsetType'], $this->filter)){
 
-				foreach ($response['categories'] as $row)
-					$this->categ_array[$i][] = $row['category'];
+					foreach ($response['senses'] as $row){
+						$this->synset_array[$k]['lemma'][] = strtolower($row['lemma']);
+						$this->synset_array[$k]['source'][] = $row['source'];
+					}
 
-				foreach ($response['domains'] as $key => $value){
-					$this->dom_array[$i]['domain'][] = $key;
-					$this->dom_array[$i]['weight'][] = $value;
+					foreach ($response['categories'] as $row)
+						$this->synset_array[$k]['category'][] = strtolower($row['category']);
+
+					foreach ($response['domains'] as $key => $value){
+						$this->synset_array[$k]['domain'][] = strtolower($key);
+						$this->synset_array[$k]['weight'][] = $value;
+					}
+
+					$k++;
 				}
-
 			}
-
-			return array($this->synset_array, $this->categ_array, $this->dom_array);
-
 		}
 
 
