@@ -15,13 +15,17 @@
 	class Synset {
 		
 		// Internal service attributes.
-		private $word, $source_lang, $dest_lang, $filter_results, $filter;
+		private $word, $source_lang, $dest_lang;
 
 		// Public attributes.
-		public $synset_source, $synset_array, $categ_array, $dom_array, $sources_array, $dist_domains, $dist_categs;
+		public $synset_source, $synset_array, $categ_array, $dom_array, $sources_array;
 
 		// Output attributes.
 		public $message, $errlog, $status;
+
+		// Parameters and configuration attributes.
+		public $filter_results	= TRUE;
+		public $filter			= array("CONCEPT");
 
 
 		//////////////////////////////////////////////////////////////////////////////////////////
@@ -38,9 +42,7 @@
 				$this->word				= $word;
 				$this->source_lang		= $source_lang;
 				$this->dest_lang		= $dest_lang;
-				$this->synset_sounce	= NULL;
-				$this->filter_results	= TRUE;
-				$this->filter			= array("CONCEPT");
+				$this->synset_source	= NULL;
 				$this->getSynset();
 				if (is_array($this->synset_source)){
 					$this->message			= "Class Synset (".$word.") instanced successfully. [Synset.Synset]";
@@ -71,7 +73,7 @@
 		private function getSynset(){
 			
 			$bn = new BabelNetRequest();
-			$response = $bn->getSynsetByWord($this->word, "IT");
+			$response = $bn->getSynsetByWord($this->word, $this->source_lang);
 
 			foreach ($response as $row){
 				
@@ -94,6 +96,13 @@
 		}
 
 
+		public function out($var){
+			echo "<br><br><pre>";
+			print_r($var);
+			echo "</pre><br><br>";
+		}
+
+
 		// Returns an array containing synsets, categories and domains of $this->word.
 		public function getSynsetArray(){
 			
@@ -107,9 +116,12 @@
 				if ($this->filter_results && in_array($response['synsetType'], $this->filter)){
 
 					foreach ($response['senses'] as $row){
-						$this->synset_array[$k]['lemma'][] = str_replace("_", " ", strtolower($row['lemma']));
+						$this->synset_array[$k]['lemma'][]	= str_replace("_", " ", strtolower($row['lemma']));
 						$this->synset_array[$k]['source'][] = $row['source'];
+						$this->synset_array[$k]['id']		= $row['synsetID']['id'];
 					}
+
+					$this->synset_array[$k]['lemma'] = array_unique($this->synset_array[$k]['lemma']);
 
 					foreach ($response['categories'] as $row)
 						$this->synset_array[$k]['category'][] = str_replace("_", " ", strtolower($row['category']));

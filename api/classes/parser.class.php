@@ -9,12 +9,13 @@
 
 	// Includes.
 	require_once("synset.class.php");
+	require_once("translation.class.php");
 
 	
 	class Parser {
 		
 		// Internal service attributes.
-		private $header_string, $separator, $delimiter, $header_array, $header_token, $domains, $categs, $synset, $weight, $table_categs, $table_domains;
+		private $header_string, $separator, $delimiter, $header_array, $header_token, $domains, $categs, $synset, $weight, $table_categs, $table_domains, $source_lang, $dest_lang, $translation;
 
 		// Public attributes.
 		public $a;
@@ -23,8 +24,9 @@
 		public $message, $errlog, $status;
 
 		// Parameters and configuration attributes.
-		public $categ_k	= 1;
+		public $categ_k		= 1;
 		public $domain_k	= 0.75;
+		public $threshold_k	= 0.1;
 
 
 		//////////////////////////////////////////////////////////////////////////////////////////
@@ -35,9 +37,9 @@
 
 
 		// Requires the header, a separator character and a delimiter character.
-		public function Parser($header, $separator, $delimiter){
+		public function Parser($header, $separator, $delimiter, $source_lang, $dest_lang){
 			
-			if ($header && $separator && $delimiter){
+			if ($header && $separator && $delimiter && $dest_lang && $source_lang){
 				if (is_array($header)){
 					$this->message	= "Error code 017:header is an array. [Parser.Parser]";
 					$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
@@ -46,6 +48,8 @@
 					$this->header_string	= $header;
 					$this->separator		= $separator;
 					$this->delimiter		= $delimiter;
+					$this->source_lang		= $source_lang;
+					$this->dest_lang		= $dest_lang;
 					$this->header_array		= 
 					$this->header_token		= array();
 					$this->message			= "Class Parser instanced successfully. [Parser.Parser]";
@@ -55,9 +59,10 @@
 					$this->tokenizate();
 					$this->buildSynsets();
 					$this->calculateWeightByTable();
+					$this->translate();
 				}
 			}else{
-				$this->message	= "Error code 001: missing parameters (header, separator, delimiter). [Parser.Parser]";
+				$this->message	= "Error code 001: missing parameters (header, separator, delimiter, source_lang, dest_lang). [Parser.Parser]";
 				$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
 				$this->status	= FALSE;
 			}
@@ -91,7 +96,7 @@
 
 			foreach ($this->header_array as $key => $value){
 
-				$synset = new Synset($value, "IT", "IT");
+				$synset = new Synset($value, $this->source_lang, $this->source_lang);
 				
 				$this->header_token['token'][$key]	= $synset->status ? "WN" : "CN";
 				$this->header_token['header'][$key]	= $this->header_token['token'][$key] == "CN" ? $this->processCN($value) : $value;
@@ -135,7 +140,7 @@
 			
 			foreach ($this->header_token['header'] as $key => $term){
 				
-				$this->synset[$key] = new Synset($term, "IT", "IT");
+				$this->synset[$key] = new Synset($term, $this->source_lang, $this->source_lang);
 
 				if ($this->synset[$key]->status){
 					$this->synset[$key]->getSynsetArray();
@@ -217,11 +222,12 @@
 		}
 
 
+		// Calculates the weight of every synset based on current header's categories and domains.
 		private function calculateWeightBySynset(){
 			
 			for ($i = 0; $i < count($this->synset); $i++){
 
-				echo "<b>Header".($i+1)."</b>";
+				echo "<b>".($i+1).". ".$this->header_token['header'][$i]."</b>";
 				echo "<table border='1' cellpadding='5'><tr><th>#</th><th>Synset</th><th>Peso categ</th><th>Peso domini</th><th>Peso tot</th></tr>";
 				
 				for ($k = 0; $k < count($this->synset[$i]->synset_array); $k++){
@@ -258,15 +264,18 @@
 		}
 
 
+		// Calculates the weight of every synset based on the entire headerset's categories and domains.
 		private function calculateWeightByTable(){
 
-			$sort = function ($a, $b){
-							return $b['weight'] - $a['weight'];
-						};
+			$sort = function($a, $b) {
+					return $a['weight'] < $b['weight'];
+			};
 			
 			for ($i = 0; $i < count($this->synset); $i++){
 
-				echo "<b>Header".($i+1)."</b>";
+				$threshold = 0;
+
+				echo "<b>".($i+1).". ".$this->header_token['header'][$i]."</b>";
 				echo "<table border='1' cellpadding='5'><tr><th>#</th><th>Synset</th><th>Peso categ</th><th>Peso domini</th><th>Peso tot</th></tr>";
 				
 				for ($k = 0; $k < count($this->synset[$i]->synset_array); $k++){
@@ -285,7 +294,9 @@
 					$domain_weight	= max($w_dom);
 
 					$this->synset[$i]->synset_array[$k]['weight'] = ($categ_weight*$this->categ_k + $domain_weight*$this->domain_k) / 2;
-					if (!$this->synset[$i]->synset_array[$k]['weight']) $this->synset[$i]->synset_array[$k]['weight'] = "?";
+					if (!$this->synset[$i]->synset_array[$k]['weight']) $this->synset[$i]->synset_array[$k]['weight'] = 0;
+
+					$threshold = $this->synset[$i]->synset_array[$k]['weight'] > $threshold ? $this->synset[$i]->synset_array[$k]['weight'] : $threshold;
 
 					echo "<tr><td>".($k+1)."</td>";
 					echo "<td>{".implode(", ", $this->synset[$i]->synset_array[$k]['lemma'])."}</td>";
@@ -295,18 +306,79 @@
 
 				}
 
-				usort($this->synset[$i]->synset_array, $sort);
-
 				echo "</table>";
 
+				$threshold *= $this->threshold_k;
+
+				echo "Vengono filtrati pesi inferiori o uguali a ".$threshold."<br>";
+
+				foreach ($this->synset[$i]->synset_array as $key => $value) if ($value['weight'] <= $threshold) unset($this->synset[$i]->synset_array[$key]);
+
+				usort($this->synset[$i]->synset_array, $sort);
+
+				//$this->out($this->synset[$i]->synset_array);
+
+				//$this->synset[$i]->synset_array = $this->multiSort($this->synset[$i]->synset_array, "weight");
+
+				/*echo "<b>".($i+1).". ".$this->header_token['header'][$i]."</b>";
+				echo "<table border='1' cellpadding='5'><tr><th>#</th><th>ID</th><th>Synset</th><th>Peso tot</th></tr>";
+
+				foreach ($this->synset[$i]->synset_array as $key => $value){
+
+					echo "<tr><td>".($key+1)."</td>";
+					echo "<td>".$value['id']."</td>";
+					echo "<td>{".implode(", ", $value['lemma'])."}</td>";
+					echo "<td>".$value['weight']."</td></tr>";
+
+				}*/
 			}
 		}
 
 
-		private function order(){
-			
+		private function translate(){
+
+			$all_ids = array();
+
+			foreach ($this->synset as $i => $syns){
+
+				foreach ($syns->synset_array as $syns_arr) $all_ids[] = $syns_arr['id'];
+
+				//$this->out($all_ids);
+
+				$this->translation[$i] = new Translation($all_ids, $this->source_lang, $this->dest_lang);
+				//$this->translation[$i]->HTMLizeErrlog();
+
+				//$this->out($this->translation[$i]->synset_array);
+
+				echo "<b>".($i+1).". ".$this->header_token['header'][$i]."</b>";
+				echo "<table border='1' cellpadding='5'><tr><th>#</th><th>ID</th><th>Synset source</th><th>Synset dest</th><th>Peso tot</th></tr>";
+
+				foreach ($this->synset[$i]->synset_array as $key => $value){
+
+					echo "<tr><td>".($key+1)."</td>";
+					echo "<td>".$value['id']."</td>";
+					echo "<td>{".utf8_encode(implode(", ", $value['lemma']))."}</td>";
+					echo "<td>{".utf8_encode(implode(", ", $this->translation[$i]->synset_array[$key]['lemma']))."}</td>";
+					echo "<td>".$value['weight']."</td></tr>";
+
+				}
+			}
+		}
 
 
+		private function multiSort($array, $key){
+		
+			$sorter	= array();
+			$ret	= array();
+			reset($array);
+
+			foreach ($array as $i => $value) $sorter[$i] = $value[$key];
+
+			arsort($sorter);
+
+			foreach ($sorter as $i => $value) $ret[$i] = $array[$i];
+
+			return $ret;
 		}
 
 
@@ -320,6 +392,13 @@
 		// Returns an HTML-compatible version of $this->errlog.
 		public function HTMLizeErrlog(){
 			return str_replace("\n", "<br />", $this->errlog);
+		}
+
+
+		public function out($var){
+			echo "<br><br><pre>";
+			print_r($var);
+			echo "</pre><br><br>";
 		}
 
 
