@@ -312,7 +312,7 @@
 
 				echo "Vengono filtrati pesi inferiori o uguali a ".$threshold."<br>";
 
-				foreach ($this->synset[$i]->synset_array as $key => $value) if ($value['weight'] <= $threshold) unset($this->synset[$i]->synset_array[$key]);
+				foreach ($this->synset[$i]->synset_array as $key => $value) if ($value['weight'] < $threshold) unset($this->synset[$i]->synset_array[$key]);
 
 				usort($this->synset[$i]->synset_array, $sort);
 
@@ -337,31 +337,37 @@
 
 		private function translate(){
 
-			$all_ids = array();
-
 			foreach ($this->synset as $i => $syns){
+
+				$all_ids = array();
 
 				foreach ($syns->synset_array as $syns_arr) $all_ids[] = $syns_arr['id'];
 
-				//$this->out($all_ids);
+				$this->out($all_ids);
 
 				$this->translation[$i] = new Translation($all_ids, $this->source_lang, $this->dest_lang);
 				//$this->translation[$i]->HTMLizeErrlog();
 
 				//$this->out($this->translation[$i]->synset_array);
 
+				$k = 0;
+
 				echo "<b>".($i+1).". ".$this->header_token['header'][$i]."</b>";
-				echo "<table border='1' cellpadding='5'><tr><th>#</th><th>ID</th><th>Synset source</th><th>Synset dest</th><th>Peso tot</th></tr>";
+				echo "<table border='1' cellpadding='5'><tr><th>#</th><th>BabelID</th><th>Synset source</th><th>Synset dest</th><th>Peso tot</th></tr>";
 
 				foreach ($this->synset[$i]->synset_array as $key => $value){
 
 					echo "<tr><td>".($key+1)."</td>";
 					echo "<td>".$value['id']."</td>";
 					echo "<td>{".utf8_encode(implode(", ", $value['lemma']))."}</td>";
-					echo "<td>{".utf8_encode(implode(", ", $this->translation[$i]->synset_array[$key]['lemma']))."}</td>";
+					echo "<td>{".utf8_encode(implode(", ", $this->translation[$i]->synset_array[$k]['lemma']))."}</td>";
 					echo "<td>".$value['weight']."</td></tr>";
 
+					$k++;
+
 				}
+
+				echo "</table>";
 			}
 		}
 
