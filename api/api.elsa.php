@@ -1,7 +1,11 @@
 <?php
 	
+	require_once("classes/msghandle.class.php");
+	$msg = new Msghandle();
+	
 	if ($_REQUEST['mode'] == "translate"){
 	
+		
 		require("classes/babelnetrequest.class.php");
 		require("classes/bingtranslaterequest.class.php");
 
@@ -12,6 +16,7 @@
 		//$string = $mt->detect($_REQUEST['word']);
 
 		//var_dump($string);
+		echo $msg->msglog;
 
 		echo $string;
 		echo "<br>";

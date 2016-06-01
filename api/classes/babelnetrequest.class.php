@@ -34,6 +34,8 @@
 		// Returns TRUE if is successful, FALSE otherwise.
 		public function BabelNetRequest(){
 
+			global $msg;
+
 			$this->message = $this->errlog = NULL;
 			
 			$this->api_key			= "0323bb0e-3eab-4923-85bc-36f974868f88";
@@ -45,10 +47,12 @@
 			$ok = $this->checkConnection();
 
 			if ($ok){
+				$msg->log("999", __METHOD__, "BabelNet version: ".$this->bn_version);
 				$this->message	= "Class BabelNetRequest instanced successfully. BabelNet version: ".$this->bn_version." [BabelNetRequest.BabelNetRequest]";
 				$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
 				$this->status	= TRUE;
 			}else{
+				$msg->log("012", __METHOD__);
 				$this->message	= "Error code 011: BabelNet connection failed. [BabelNetRequest.BabelNetRequest]";
 				$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
 				$this->status	= FALSE;
@@ -116,6 +120,7 @@
 		public function getSenseByWord($word, $source_lang, $dest_lang=NULL){
 
 			if (!$word || !$source_lang){
+				$msg->log("002", __METHOD__, "word, source_lang");
 				$this->message	= "Error code 001: missing parameters (word or source language). [BabelNetRequest.getSenseByWord]";
 				$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
 				$this->status	= FALSE;
@@ -147,6 +152,7 @@
 		public function getSynsetByID($id, $dest_lang=NULL){
 
 			if (!$id){
+				$msg->log("002", __METHOD__, "id");
 				$this->message	= "Error code 001: missing parameters (id). [BabelNetRequest.getSynsetByID]";
 				$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
 				$this->status	= FALSE;
@@ -173,6 +179,7 @@
 		public function getSynsetByWord($word, $source_lang){
 
 			if (!$word){
+				$msg->log("002", __METHOD__, "word");
 				$this->message	= "Error code 001: missing parameters (word). [BabelNetRequest.getSynsetByWord]";
 				$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
 				$this->status	= FALSE;

@@ -10,12 +10,13 @@
 	// Includes.
 	require_once("synset.class.php");
 	require_once("translation.class.php");
+	require_once("abstatrequest.class.php");
 
 	
 	class Parser {
 		
 		// Internal service attributes.
-		private $header_string, $separator, $delimiter, $header_array, $header_token, $domains, $categs, $synset, $weight, $table_categs, $table_domains, $source_lang, $dest_lang, $translation;
+		private $header_string, $separator, $header_array, $header_token, $domains, $categs, $synset, $weight, $table_categs, $table_domains, $source_lang, $dest_lang, $translation;
 
 		// Public attributes.
 		public $a;
@@ -37,21 +38,24 @@
 
 
 		// Requires the header, a separator character and a delimiter character.
-		public function Parser($header, $separator, $delimiter, $source_lang, $dest_lang){
+		public function Parser($header, $separator, $source_lang, $dest_lang){
+
+			global $msg;
 			
-			if ($header && $separator && $delimiter && $dest_lang && $source_lang){
+			if ($header && $separator && $dest_lang && $source_lang){
 				if (is_array($header)){
+					$msg->log("018", __METHOD__, "header");
 					$this->message	= "Error code 017:header is an array. [Parser.Parser]";
 					$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
 					$this->status	= FALSE;
 				}else{
 					$this->header_string	= $header;
 					$this->separator		= $separator;
-					$this->delimiter		= $delimiter;
 					$this->source_lang		= $source_lang;
 					$this->dest_lang		= $dest_lang;
 					$this->header_array		= 
 					$this->header_token		= array();
+					$msg->log("998", __METHOD__);
 					$this->message			= "Class Parser instanced successfully. [Parser.Parser]";
 					$this->errlog			.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
 					$this->status			= TRUE;
@@ -60,9 +64,11 @@
 					$this->buildSynsets();
 					$this->calculateWeightByTable();
 					$this->translate();
+					$this->retrieveMapping();
 				}
 			}else{
-				$this->message	= "Error code 001: missing parameters (header, separator, delimiter, source_lang, dest_lang). [Parser.Parser]";
+				$msg->log("002", __METHOD__, "header, separator, source_lang, dest_lang");
+				$this->message	= "Error code 001: missing parameters (header, separator, source_lang, dest_lang). [Parser.Parser]";
 				$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
 				$this->status	= FALSE;
 			}
@@ -78,8 +84,11 @@
 
 		// Transforms a header in form of string into an array of headers.
 		private function headerToArray(){
+
+			$harray = explode($this->separator, $this->header_string);
+			foreach ($harray as $field) if ($field) $this->header_array[] = trim($field);
 			
-			$exp_delimiter = explode($this->delimiter, $this->header_string);
+			/*$exp_delimiter = explode($this->delimiter, $this->header_string);
 
 			foreach ($exp_delimiter as $delimited){
 				
@@ -87,7 +96,7 @@
 
 				foreach ($exp_separator as $field) if ($field) $this->header_array[] = $field;
 
-			}
+			}*/
 		}
 
 
@@ -343,8 +352,6 @@
 
 				foreach ($syns->synset_array as $syns_arr) $all_ids[] = $syns_arr['id'];
 
-				$this->out($all_ids);
-
 				$this->translation[$i] = new Translation($all_ids, $this->source_lang, $this->dest_lang);
 				//$this->translation[$i]->HTMLizeErrlog();
 
@@ -368,6 +375,47 @@
 				}
 
 				echo "</table>";
+			}
+		}
+
+
+		private function retrieveMapping(){
+			
+			$abstat = new ABSTATRequest();
+
+			foreach ($this->translation as $i => $trans){
+
+				$predicates = array();
+
+				foreach ($trans->synset_array as $syns_arr){
+
+					$array_lemmas = array();
+
+					foreach ($syns_arr['lemma'] as $lemma)
+						$array_lemmas[] = $lemma;
+					
+					$abstat->query($array_lemmas);
+
+					$abstatprop = $abstat->getProperties();
+
+					if ($abstatprop['schema'] || is_array($abstataprop['schema'])){
+						echo "prima";
+						$this->out($predicates);
+						echo "source";
+						$this->out($abstatprop['schema']);
+						$predicates = array_merge($predicates, $abstatprop['schema']);
+						echo "dopo";
+						$this->out($predicates);
+						$predicates = array_unique($predicates);
+						
+					}
+					
+					echo "fuori ciclo";
+					$this->out($predicates);
+					echo "<hr>";
+				}
+				echo "alla fine";
+				$this->out($predicates);
 			}
 		}
 

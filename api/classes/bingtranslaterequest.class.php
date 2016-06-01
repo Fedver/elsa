@@ -34,6 +34,8 @@
 		// Returns TRUE if is successful, FALSE otherwise.
 		public function BingTranslateRequest(){
 
+			global $msg;
+
 			$this->message = $this->errlog = NULL;
 			
 			$this->client_id		= "FedversELSA";
@@ -49,11 +51,13 @@
 			$this->http->resetRequestSettings();
 
 			if ($ok){
+				$msg->log("999", __METHOD);
 				$this->http->setHeader("Authorization: Bearer ".$this->token);
 				$this->message	= "Class BingTranslateRequest instanced successfully. [BingTranslateRequest.BingTranslateRequest]";
 				$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
 				$this->status	= TRUE;
 			}else{
+				$msg->log("017", __METHOD);
 				$this->message	= "Error code 016: Microsoft Translator token not valid. [BingTranslateRequest.BingTranslateRequest]";
 				$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
 				$this->status	= FALSE;
@@ -104,13 +108,15 @@
 			$response = $this->http->send();
 
 			if (!$response['access_token']){
-				$this->message	= "Microsoft Translator error code ".$response['error'].": ".$response['error_description'].". [BingTranslateRequest.checkConnection]";
+				$msg->logCustom("Microsoft Translator", $response['error'], $response['error_description'], "error", __METHOD);
+				$this->message	= "Microsoft Translator error code ".$response['error'].": ".$response['error_description'].". [".__METHOD__."]";
 				$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
 				$this->status	= FALSE;
 				return FALSE;
 			}else{
 				$this->token	= $response['access_token'];
-				$this->message	= "Microsoft Translator connection successful. [BingTranslateRequest.checkConnection]";
+				$msg->logCustom("Microsoft Translator", $response['error'], "connection successful", "notice", __METHOD);
+				$this->message	= "Microsoft Translator connection successful. [".__METHOD__."]";
 				$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
 				$this->status	= TRUE;
 				return TRUE;
