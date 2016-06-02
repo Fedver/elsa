@@ -43,6 +43,7 @@
 			$this->properties		= array();
 			$this->setModes();
 			$ok = $this->checkConnection();
+			echo $this->HTMLizeErrlog();
 
 			if ($ok){
 				$this->message	= "Class ABSTATRequest instanced successfully (dataset: ".$this->dataset."). [ABSTATRequest.ABSTATRequest]";

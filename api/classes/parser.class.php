@@ -65,6 +65,8 @@
 					$this->calculateWeightByTable();
 					$this->translate();
 					$this->retrieveMapping();
+
+					echo $this->HTMLizeErrlog();
 				}
 			}else{
 				$msg->log("002", __METHOD__, "header, separator, source_lang, dest_lang");

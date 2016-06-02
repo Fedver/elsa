@@ -55,7 +55,7 @@
 
 		require("classes/parser.class.php");
 
-		$p = new Parser($_REQUEST['header'], chr($_REQUEST['separator']), chr($_REQUEST['delimiter']), "IT", "EN");
+		$p = new Parser($_REQUEST['header'], chr($_REQUEST['separator']), "IT", "EN");
 
 		//echo $_REQUEST['header'].", ".chr($_REQUEST['separator']).", ".chr($_REQUEST['delimiter'])."<br>";
 

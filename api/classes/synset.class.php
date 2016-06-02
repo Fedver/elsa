@@ -44,6 +44,7 @@
 				$this->dest_lang		= $dest_lang;
 				$this->synset_source	= NULL;
 				$this->getSynset();
+				echo $this->HTMLizeErrlog();
 				if (is_array($this->synset_source)){
 					$this->message			= "Class Synset (".$word.") instanced successfully. [Synset.Synset]";
 					$this->errlog			.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";

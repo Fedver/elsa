@@ -41,6 +41,7 @@
 					$this->message	= "Class HttpRequest instanced successfully. [HttpRequest.HttpRequest]";
 					$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
 					$this->status	= TRUE;
+					echo $this->HTMLizeErrlog();
 				}else{
 					$this->message	= "Error code 009: URL format is not valid. [HttpRequest.HttpRequest]";
 					$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
@@ -65,6 +66,13 @@
 		// Returns an HTML-compatible version of $this->errlog.
 		public function HTMLizeErrlog(){
 			return str_replace("\n", "<br />", $this->errlog);
+		}
+
+
+		public function out($var){
+			echo "<br><br><pre>";
+			print_r($var);
+			echo "</pre><br><br>";
 		}
 		
 		
