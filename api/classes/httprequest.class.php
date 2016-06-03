@@ -38,10 +38,10 @@
 					$this->url		= $url;
 					$this->method	= "GET";
 					$this->params	= NULL;
+					set_time_limit(1000);
 					$this->message	= "Class HttpRequest instanced successfully. [HttpRequest.HttpRequest]";
 					$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
 					$this->status	= TRUE;
-					echo $this->HTMLizeErrlog();
 				}else{
 					$this->message	= "Error code 009: URL format is not valid. [HttpRequest.HttpRequest]";
 					$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
@@ -103,6 +103,7 @@
 				try{
 					$http	= curl_init();
 					curl_setopt($http, CURLOPT_URL, $this->url);
+					curl_setopt($http, CURLOPT_TIMEOUT, 1000);
 					curl_setopt($http, CURLOPT_RETURNTRANSFER, 1);
 					if ($this->method == "POST"){
 						curl_setopt($http, CURLOPT_POST, TRUE);

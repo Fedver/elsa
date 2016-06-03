@@ -1,5 +1,7 @@
 <?php
 	
+	ini_set('max_execution_time', 1000);
+
 	require_once("classes/msghandle.class.php");
 	$msg = new Msghandle();
 	

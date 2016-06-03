@@ -16,7 +16,7 @@
 	class Parser {
 		
 		// Internal service attributes.
-		private $header_string, $separator, $header_array, $header_token, $domains, $categs, $synset, $weight, $table_categs, $table_domains, $source_lang, $dest_lang, $translation;
+		private $header_string, $separator, $header_array, $header_token, $domains, $categs, $synset, $weight, $table_categs, $table_domains, $source_lang, $dest_lang, $translation, $property, $output;
 
 		// Public attributes.
 		public $a;
@@ -65,8 +65,9 @@
 					$this->calculateWeightByTable();
 					$this->translate();
 					$this->retrieveMapping();
+					$this->buildOutput();
 
-					echo $this->HTMLizeErrlog();
+					$this->out($this->output);
 				}
 			}else{
 				$msg->log("002", __METHOD__, "header, separator, source_lang, dest_lang");
@@ -359,7 +360,7 @@
 
 				//$this->out($this->translation[$i]->synset_array);
 
-				$k = 0;
+				/*$k = 0;
 
 				echo "<b>".($i+1).". ".$this->header_token['header'][$i]."</b>";
 				echo "<table border='1' cellpadding='5'><tr><th>#</th><th>BabelID</th><th>Synset source</th><th>Synset dest</th><th>Peso tot</th></tr>";
@@ -376,7 +377,7 @@
 
 				}
 
-				echo "</table>";
+				echo "</table>";*/
 			}
 		}
 
@@ -387,11 +388,10 @@
 
 			foreach ($this->translation as $i => $trans){
 
-				$predicates = array();
+				foreach ($trans->synset_array as $k => $syns_arr){
 
-				foreach ($trans->synset_array as $syns_arr){
-
-					$array_lemmas = array();
+					$array_lemmas	= array();
+					$predicates		= array();
 
 					foreach ($syns_arr['lemma'] as $lemma)
 						$array_lemmas[] = $lemma;
@@ -401,24 +401,74 @@
 					$abstatprop = $abstat->getProperties();
 
 					if ($abstatprop['schema'] || is_array($abstataprop['schema'])){
-						echo "prima";
-						$this->out($predicates);
-						echo "source";
-						$this->out($abstatprop['schema']);
 						$predicates = array_merge($predicates, $abstatprop['schema']);
-						echo "dopo";
-						$this->out($predicates);
 						$predicates = array_unique($predicates);
+						$this->property[$i][$k] = $predicates;
+						//$this->out($this->property);
 						
 					}
-					
-					echo "fuori ciclo";
-					$this->out($predicates);
-					echo "<hr>";
 				}
-				echo "alla fine";
-				$this->out($predicates);
+				/*echo "alla fine";
+				$this->out($predicates);*/
+
+				//$this->property[$i][$k] = $predicates;
+
+				//$this->out($this->property);
+
+				$k = 0;
+
+				echo "<b>".($i+1).". ".$this->header_token['header'][$i]."</b>";
+				echo "<table border='1' cellpadding='5'><tr><th>#</th><th>Synset source</th><th>Synset dest</th><th>Properties</th><th>Peso</th></tr>";
+
+				foreach ($this->synset[$i]->synset_array as $key => $value){
+
+					echo "<tr><td>".($key+1)."</td>";
+					echo "<td>{".utf8_encode(implode(", ", $value['lemma']))."}</td>";
+					echo "<td>{".utf8_encode(implode(", ", $this->translation[$i]->synset_array[$k]['lemma']))."}</td>";
+					echo "<td>{".utf8_encode(implode(", ", $this->property[$i][$k]))."}</td>";
+					echo "<td>".$value['weight']."</td></tr>";
+
+					$k++;
+
+				}
+
+				echo "</table>";
+
+
 			}
+		}
+
+
+		private function buildOutput(){
+			
+			for ($i = 0; $i < count($this->translation); $i++){
+
+				$this->output[$i]['header'] = $this->header_token['header'][$i];
+
+				$properties = array();
+
+				for ($k = 0; $k < count($this->translation[$i]->synset_array); $k++){
+
+					$addweight = FALSE;
+					
+					foreach ($this->property[$i][$k] as $property){
+						
+						if (!in_array($property, $properties)) {
+							$properties[] = $property;
+							$this->output[$i]['predicate'][$k]['properties'][] = $property;
+							$addweight = TRUE;
+						}else	$addweight = FALSE;
+					}
+
+					//$properties = array_merge($properties, $this->property[$i][$k]);
+					
+					//$this->output[$i][$k]['predicates'] = implode(", ", $this->property[$i][$k]);
+					if ($addweight) $this->output[$i]['predicate'][$k]['weight'] = $this->synset[$i]->synset_array[$k]['weight'] ? $this->synset[$i]->synset_array[$k]['weight'] : "?";
+
+				}
+
+			}
+
 		}
 
 

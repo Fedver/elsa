@@ -43,7 +43,6 @@
 			$this->properties		= array();
 			$this->setModes();
 			$ok = $this->checkConnection();
-			echo $this->HTMLizeErrlog();
 
 			if ($ok){
 				$this->message	= "Class ABSTATRequest instanced successfully (dataset: ".$this->dataset."). [ABSTATRequest.ABSTATRequest]";
@@ -198,14 +197,22 @@
 		private function synsetFilter($synset){
 
 			for ($i = 0; $i < count($synset); $i++)
-				if (strpos($synset[$i], ")") !== FALSE ||
+				$synset[$i] = str_replace("(", "", $synset[$i]);
+				$synset[$i] = str_replace(")", "", $synset[$i]);
+				$synset[$i] = str_replace("_", "", $synset[$i]);
+				$synset[$i] = str_replace(",", "", $synset[$i]);
+				$synset[$i] = str_replace(".", "", $synset[$i]);
+				$synset[$i] = str_replace(";", "", $synset[$i]);
+				$synset[$i] = str_replace(":", "", $synset[$i]);
+
+				/*if (strpos($synset[$i], ")") !== FALSE ||
 					strpos($synset[$i], "(") !== FALSE ||
 					strpos($synset[$i], "_") !== FALSE ||
 					strpos($synset[$i], ",") !== FALSE ||
 					strpos($synset[$i], ".") !== FALSE ||
 					strpos($synset[$i], ";") !== FALSE ||
 					strpos($synset[$i], ":") !== FALSE)
-						unset($synset[$i]);
+						unset($synset[$i]);*/
 
 			return $synset;
 		}
@@ -274,9 +281,6 @@
 					$this->http->setURL($request);
 					$response = $this->http->send(TRUE);
 
-					echo "response";
-					$this->out($response);
-
 					foreach ($response['results'] as $result){
 						foreach ($result as $element) {
 							if (!in_array($element['pred']['value'], $this->properties['uri']))
@@ -285,12 +289,7 @@
 					}
 				}
 
-				echo "prima della build";
-				$this->out($this->properties);
-
 				$this->buildOutput();
-				echo "dopo la build";
-				$this->out($this->properties);
 			}
 		}
 

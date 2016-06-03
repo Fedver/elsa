@@ -45,7 +45,7 @@
 			$this->http				= new HttpRequest();
 			$this->setModes();
 			$ok = $this->checkConnection();
-			echo $this->HTMLizeErrlog();
+			
 			if ($ok){
 				$msg->log("999", __METHOD__, "BabelNet version: ".$this->bn_version);
 				$this->message	= "Class BabelNetRequest instanced successfully. BabelNet version: ".$this->bn_version." [BabelNetRequest.BabelNetRequest]";
