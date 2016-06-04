@@ -29,13 +29,14 @@
 	class Msghandle {
 		
 		// Internal service attributes.
-		private $msgcode, $showclassnames;
-
-		// Public attributes.
-		public $user_id, $user_email;
+		private $msgcode;
+		private $showclassnames;
 
 		// Output attributes.
-		public $message, $msglog, $asciilog, $status;
+		public $message;
+		public $msglog;
+		public $asciilog;
+		public $status;
 
 
 		//////////////////////////////////////////////////////////////////////////////////////////

@@ -14,10 +14,18 @@
 	class BingTranslateRequest {
 		
 		// Internal service attributes.
-		private $url, $client_id, $client_secret, $grant_type, $http, $token, $header, $query_modes;
+		private $url;
+		private $client_id;
+		private $client_secret;
+		private $grant_type;
+		private $http;
+		private $token;
+		private $header;
+		private $query_modes;
 
 		// Public attributes.
-		public $bn_version, $service_name;
+		public $bn_version;
+		public $service_name;
 
 		// Output attributes.
 		public $message, $errlog, $status;

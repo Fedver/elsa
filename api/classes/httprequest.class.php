@@ -17,7 +17,10 @@
 	class HttpRequest {
 		
 		// Internal service attributes.
-		private $url, $method, $params, $header;
+		private $url;
+		private $method;
+		private $params;
+		private $header;
 
 		// Output attributes.
 		public $message, $errlog, $status;

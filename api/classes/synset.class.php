@@ -15,10 +15,16 @@
 	class Synset {
 		
 		// Internal service attributes.
-		private $word, $source_lang, $dest_lang;
+		private $word;
+		private $source_lang;
+		private $dest_lang;
 
 		// Public attributes.
-		public $synset_source, $synset_array, $categ_array, $dom_array, $sources_array;
+		public $synset_source;
+		public $synset_array;
+		public $categ_array;
+		public $dom_array;
+		public $sources_array;
 
 		// Output attributes.
 		public $message, $errlog, $status;

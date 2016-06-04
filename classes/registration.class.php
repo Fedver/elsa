@@ -32,7 +32,8 @@
 		private $conn;
 
 		// Public attributes.
-		public $user_id, $user_email;
+		public $user_id;
+		public $user_email;
 
 		// Output attributes.
 		public $message, $errlog, $status;

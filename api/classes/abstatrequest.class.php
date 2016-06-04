@@ -13,10 +13,19 @@
 	class ABSTATRequest {
 		
 		// Internal service attributes.
-		private $url, $uri_basename, $dataset, $schemas, $query_modes, $http, $synset, $properties;
+		private $url;
+		private $uri_basename;
+		private $dataset;
+		private $schemas;
+		private $query_modes;
+		private $http;
+		private $synset;
+		private $properties;
+		private $distinct_words;
 
 		// Public attributes.
-		public $service_name, $cardinality;
+		public $service_name;
+		public $cardinality;
 
 		// Output attributes.
 		public $message, $errlog, $status;
@@ -29,8 +38,7 @@
 		//////////////////////////////////////////////////////////////////////////////////////////
 
 
-		// Requires mysqli resource.
-		// Returns TRUE if is successful, FALSE otherwise.
+		// Returns TRUE if is ABSTAT connection is successful, FALSE otherwise.
 		public function ABSTATRequest(){
 
 			$this->message = $this->errlog = NULL;
@@ -40,7 +48,8 @@
 			$this->url				= "http://abstat.cloudapp.net/api/v1/";
 			$this->uri_basename		= "http://ld-summaries.org/resource/".$this->dataset;
 			$this->http				= new HttpRequest();
-			$this->properties		= array();
+			$this->properties		=
+			$this->distinct_words	= array();
 			$this->setModes();
 			$ok = $this->checkConnection();
 
@@ -64,7 +73,7 @@
 		//////////////////////////////////////////////////////////////////////////////////////////
 
 
-		// Hardcode setting of interaction modes with ABTAT.
+		// Hardcode setting of interaction modes with ABTAT and RDF schema definitions of interest.
 		private function setModes(){
 			
 			$this->schemas = array(		0	=> array(	"schema"		=> "foaf:",
@@ -96,15 +105,15 @@
 		}
 
 
-		// Returns the correct BabelNet mode name stored in $this->query_modes. The parameter is a tag name.
+		// Returns the correct ABSTAT mode name stored in $this->query_modes. The parameter is a tag name.
 		private function getMode($code){
 			return $this->query_modes[$code];
 		}
 
 
-		// Checks the connection with BabelNet.
+		// Checks ABSTAT connection.
 		// Returns TRUE if it's all ok and FALSE otherwise.
-		// Also retrieves BabelNet current version, stored in $this->bn_version.
+		// Also retrieves dataset's current cardinality, stored in $this->cardinality.
 		private function checkConnection(){
 
 			$params = array(
@@ -120,6 +129,8 @@
 		}
 
 
+		// Builds a query string for ABSTAT interaction.
+		// Returns the URL-formatted query stirng if successful, FALSE otherwise.
 		private function buildQueryString($mode, $array_querystring){
 
 			if (is_array($array_querystring) && count($array_querystring) > 0)
@@ -133,15 +144,13 @@
 		}
 
 
+		// Formats an array as JSON string.
+		// Returns a string if successful, FALSE otherwise.
 		private function JSONize($array){
-
-			//$this->out($array);
-
 			$jsonized = NULL;
 			if (is_array($array) && count($array) > 0)	{
 				foreach ($array as $element)	$jsonized .= $element.",";
 				$jsonized = substr($jsonized, 0, -1);
-				//echo $jsonized."<br>";
 				return $jsonized;
 			}else{
 				$this->message	= "Error code 019: query string is not an array [ABSTATRequest.JSONize]";
@@ -149,10 +158,11 @@
 				$this->status	= FALSE;
 				return FALSE;
 			}
-
 		}
 
 
+		// Converts a word into DBpedia URIs and RDF schemas, applying $this->schemas.
+		// Requires a word, returns two arrays: schemas and URIs.
 		private function buildProperties($word){
 			
 			if (!$word){
@@ -161,24 +171,19 @@
 				$this->status	= FALSE;
 				return FALSE;
 			}else{
-
 				$properties = array();
-				
 				foreach ($this->schemas as $i => $row){
-					
 					$schema[] = $row['schema'];
 					$uri[] = $this->uri_basename.$row['uri_base'].$this->wordTransform($word);
-
-					//echo $i.". ".$row['schema']." - ".$this->uri_basename.$row['uri_base'].$this->wordTransform($word)."<br>";
-
 				}
 
 				return array($schema, $uri);
-
 			}
 		}
 
 
+		// Applies camelcase to a word. Only one exception: the first character is always lower case. Needed for DBpedia URIs.
+		// Returns the word transformed if successful, FALSE otherwise.
 		private function wordTransform($word){
 			if (!$word){
 				$this->message	= "Error code 001: missing parameters (word). ".$word." [ABSTATRequest.wordTransform]";
@@ -194,6 +199,8 @@
 		}
 
 
+		// Filters every word in a synset, removing annoying characters that are not letters.
+		// Returns a filtered synset.
 		private function synsetFilter($synset){
 
 			for ($i = 0; $i < count($synset); $i++)
@@ -218,6 +225,7 @@
 		}
 
 
+		// Builds a correct output array.
 		private function buildOutput(){
 
 			for ($i = 0; $i < count($this->properties['uri']); $i++){
@@ -245,6 +253,7 @@
 		}
 
 
+		// Outputs a variable in a preformatted form.
 		public function out($var){
 			echo "<br><br><pre>";
 			print_r($var);
@@ -252,6 +261,7 @@
 		}
 
 		
+		// Performs an ABSTAT query.
 		public function query($synset){
 
 			$this->properties = array();
@@ -267,24 +277,28 @@
 
 				foreach ($this->synset as $k => $word){
 
-					//echo $k.". ".$word."<br>";
+					if (!in_array($word, $this->distinct_words)){
 
-					list($schema, $property) = $this->buildProperties($word);
+						$this->distinct_words[] = $word;
 
-					$params = array (
-												"dataset"			=> $this->dataset,
-												"predicate"			=> $this->JSONize($property),
-												"rankingFunction"	=> "pred_frequency",
-												"format"			=> "json",
-										);
-					$request = $this->url.$this->buildQueryString("query", $params);
-					$this->http->setURL($request);
-					$response = $this->http->send(TRUE);
+						list($schema, $property) = $this->buildProperties($word);
 
-					foreach ($response['results'] as $result){
-						foreach ($result as $element) {
-							if (!in_array($element['pred']['value'], $this->properties['uri']))
-								$this->properties['uri'][] = $element['pred']['value'];
+						$params = array (
+													"dataset"			=> $this->dataset,
+													"predicate"			=> $this->JSONize($property),
+													"rankingFunction"	=> "pred_frequency",
+													"format"			=> "json",
+											);
+						$request = $this->url.$this->buildQueryString("query", $params);
+						$this->http->setURL($request);
+						$response = $this->http->send(TRUE);
+						$iterat++;
+
+						foreach ($response['results'] as $result){
+							foreach ($result as $element) {
+								if (!in_array($element['pred']['value'], $this->properties['uri']))
+									$this->properties['uri'][] = $element['pred']['value'];
+							}
 						}
 					}
 				}
@@ -292,13 +306,6 @@
 				$this->buildOutput();
 			}
 		}
-
-
-		public function getProperties(){
-			return $this->properties;
-		}
-		
-
 
 	} // End class.
 

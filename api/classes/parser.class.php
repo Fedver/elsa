@@ -16,17 +16,28 @@
 	class Parser {
 		
 		// Internal service attributes.
-		private $header_string, $separator, $header_array, $header_token, $domains, $categs, $synset, $weight, $table_categs, $table_domains, $source_lang, $dest_lang, $translation, $property, $output;
-
-		// Public attributes.
-		public $a;
+		private $header_string;
+		private $separator;
+		private $header_array;
+		private $header_token;
+		private $domains;
+		private $categs;
+		private $synset;
+		private $weight;
+		private $table_categs;
+		private $table_domains;
+		private $source_lang;
+		private $dest_lang;
+		private $translation;
+		private $property;
+		private $output;
 
 		// Output attributes.
 		public $message, $errlog, $status;
 
 		// Parameters and configuration attributes.
-		public $categ_k		= 1;
-		public $domain_k	= 0.75;
+		public $categ_k		= 0.6;
+		public $domain_k	= 0.4;
 		public $threshold_k	= 0.1;
 
 
@@ -347,6 +358,7 @@
 		}
 
 
+		// Retrieves the synset in destination language.
 		private function translate(){
 
 			foreach ($this->synset as $i => $syns){
@@ -382,6 +394,7 @@
 		}
 
 
+		// Performs ABSTAT queries and retrieves DBpedia mappings.
 		private function retrieveMapping(){
 			
 			$abstat = new ABSTATRequest();
@@ -433,12 +446,11 @@
 				}
 
 				echo "</table>";
-
-
 			}
 		}
 
 
+		// Builds a well formatted output.
 		private function buildOutput(){
 			
 			for ($i = 0; $i < count($this->translation); $i++){
@@ -466,25 +478,7 @@
 					if ($addweight) $this->output[$i]['predicate'][$k]['weight'] = $this->synset[$i]->synset_array[$k]['weight'] ? $this->synset[$i]->synset_array[$k]['weight'] : "?";
 
 				}
-
 			}
-
-		}
-
-
-		private function multiSort($array, $key){
-		
-			$sorter	= array();
-			$ret	= array();
-			reset($array);
-
-			foreach ($array as $i => $value) $sorter[$i] = $value[$key];
-
-			arsort($sorter);
-
-			foreach ($sorter as $i => $value) $ret[$i] = $array[$i];
-
-			return $ret;
 		}
 
 
@@ -501,37 +495,12 @@
 		}
 
 
+		// Outputs a variable in a preformatted form.
 		public function out($var){
 			echo "<br><br><pre>";
 			print_r($var);
 			echo "</pre><br><br>";
 		}
-
-
-		public function getHeaderArray(){
-			return $this->header_array;
-		}
-
-
-		public function getTokenArray(){
-			return $this->header_token;
-		}
-
-
-		public function getSynset(){
-			return $this->synset;
-		}
-
-
-		public function getDomains(){
-			return $this->domains;
-		}
-
-
-		public function getCategs(){
-			return $this->categs;
-		}
-
 
 	} // End class.
 

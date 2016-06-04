@@ -14,10 +14,15 @@
 	class BabelNetRequest {
 		
 		// Internal service attributes.
-		private $url, $api_key, $key_string, $http, $query_modes;
+		private $url;
+		private $api_key;
+		private $key_string;
+		private $http;
+		private $query_modes;
 
 		// Public attributes.
-		public $bn_version, $service_name;
+		public $bn_version;
+		public $service_name;
 
 		// Output attributes.
 		public $message, $errlog, $status;
