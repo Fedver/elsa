@@ -260,6 +260,11 @@
 			echo "</pre><br><br>";
 		}
 
+
+		public function getProperties(){
+			return $this->properties;
+		}
+
 		
 		// Performs an ABSTAT query.
 		public function query($synset){

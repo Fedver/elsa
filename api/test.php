@@ -1,11 +1,14 @@
 <?php
 	
-$selectvalues = array(
-						"Nome",
-						"Nome;Apparizione",
-						"Nome;Cognome;Soprannome;Lingua;DataDiNascita;LuogoDiNascita;Apparizione",
-						"Nome;Stato;FusoOrario;cap;prefisso;Popolazione;Anno;Superficie;Sindaco;Latitudine;Longitudine;Altitudine;Website"
-
+$selectvalues = array(	0 => array ("header" => "Nome", "lingua" => "IT", "titolo" => "Test semplice"),
+						1 => array ("header" => "Nombre", "lingua" => "ES", "titolo" => "Test semplice"),
+						2 => array ("header" => "Nome;Apparizione", "lingua" => "IT", "titolo" => "Test complesso"),
+						3 => array ("header" => "Nome;Cognome;Soprannome;Sesso;Lingua;DataDiNascita;LuogoDiNascita;Etnia;Professione;Autore;Editore;Doppiatore;PrimaApparizione", "lingua" => "IT", "titolo" => "GS personaggi"),
+						4 => array ("header" => "Nome;Stato;FusoOrario;cap;prefisso;Popolazione;Anno;Superficie;Sindaco;Latitudine;Longitudine;Altitudine;Website", "lingua" => "IT", "titolo" => "GS città"),
+						5 => array ("header" => "Nombre;Predecesor;Sucesor;Companhia;FechaInicioProduccion;FechaFinalizacionProduccion;Clase;Longitud;Alto;Ancho;Peso;CapacidadCombustible;Motor;Engine;Automocion;Montaje;Disenho
+", "lingua" => "ES", "titolo" => "GS automobili"),
+						6 => array ("header" => "Nombre;Seudonimo;LugarNacimiento;FechaNacimiento;LugarFallecimiento;FechaFallecimiento;Nacionalidad;Genero;Influencias;Influyo;Obras;Movimiento;Premios;AlmaMater;Website
+", "lingua" => "ES", "titolo" => "GS scrittori"),
 					);
 
 ?>
@@ -28,7 +31,7 @@ $selectvalues = array(
 			<select id="header" name="header" style="width: 700px; height: 40px; font-size: large;">
 				<?php
 						for ($i = 0; $i < count($selectvalues); $i++){
-							echo "<option value='".$selectvalues[$i]."'>".$selectvalues[$i]."</option>";
+							echo "<option value='".$selectvalues[$i]['header']."' data-lang='".$selectvalues[$i]['lingua']."'>(".$selectvalues[$i]['titolo']." ".$selectvalues[$i]['lingua'].") ".$selectvalues[$i]['header']."</option>";
 						}
 
 				?>
