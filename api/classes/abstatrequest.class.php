@@ -199,11 +199,21 @@
 		}
 
 
+		private function reverseURLFormat($text){
+			
+			$text = str_replace("%3A", ":", $text);
+			$text = str_replace("%2F", "/", $text);
+			$text = str_replace("%2C", ",", $text);
+			return $text;
+
+		}
+
+
 		// Filters every word in a synset, removing annoying characters that are not letters.
 		// Returns a filtered synset.
 		private function synsetFilter($synset){
 
-			for ($i = 0; $i < count($synset); $i++)
+			for ($i = 0; $i < count($synset); $i++){
 				$synset[$i] = str_replace("(", "", $synset[$i]);
 				$synset[$i] = str_replace(")", "", $synset[$i]);
 				$synset[$i] = str_replace("_", "", $synset[$i]);
@@ -211,15 +221,11 @@
 				$synset[$i] = str_replace(".", "", $synset[$i]);
 				$synset[$i] = str_replace(";", "", $synset[$i]);
 				$synset[$i] = str_replace(":", "", $synset[$i]);
+				$synset[$i] = str_replace("+", "", $synset[$i]);
+				$synset[$i] = str_replace("*", "", $synset[$i]);
 
-				/*if (strpos($synset[$i], ")") !== FALSE ||
-					strpos($synset[$i], "(") !== FALSE ||
-					strpos($synset[$i], "_") !== FALSE ||
-					strpos($synset[$i], ",") !== FALSE ||
-					strpos($synset[$i], ".") !== FALSE ||
-					strpos($synset[$i], ";") !== FALSE ||
-					strpos($synset[$i], ":") !== FALSE)
-						unset($synset[$i]);*/
+				$synset[$i] = trim($synset[$i]);
+			}
 
 			return $synset;
 		}
@@ -237,6 +243,12 @@
 			
 				$this->properties['uri'][$i] = "/".$this->dataset.$this->properties['uri'][$i];
 			}
+		}
+
+
+		// Resets $this->properties to a NULL value.
+		public function resetProperties(){
+			$this->properties = array();
 		}
 
 
@@ -261,8 +273,12 @@
 		}
 
 
-		public function getProperties(){
-			return $this->properties;
+		// Outputs $this->properties.
+		// If $mode is TRUE, $this->properties will be also reset to a NULL value.
+		public function getProperties($mode){
+			$returned = $this->properties;
+			if ($mode) $this->resetProperties();
+			return $returned;
 		}
 
 		
@@ -294,7 +310,8 @@
 													"rankingFunction"	=> "pred_frequency",
 													"format"			=> "json",
 											);
-						$request = $this->url.$this->buildQueryString("query", $params);
+						
+						$request = $this->reverseURLFormat($this->url.$this->buildQueryString("query", $params));
 						$this->http->setURL($request);
 						$response = $this->http->send(TRUE);
 						$iterat++;

@@ -122,7 +122,7 @@
 				$synset = new Synset($value, $this->source_lang, $this->source_lang);
 				
 				$this->header_token['token'][$key]	= $synset->status ? "WN" : "CN";
-				$this->header_token['header'][$key]	= $this->header_token['token'][$key] == "CN" ? $this->processCN($value) : $value;
+				$this->header_token['header'][$key]	= $this->header_token['token'][$key] == "CN" ? $this->processCN($value) : strtolower($value);
 
 			}
 		}
@@ -165,7 +165,7 @@
 				
 				$this->synset[$key] = new Synset($term, $this->source_lang, $this->source_lang);
 
-				if ($this->synset[$key]->status){
+				if ($this->synset[$key]->status || count($this->synset[$key]->synset_source) > 0){
 					$this->synset[$key]->getSynsetArray();
 				}
 			}
@@ -333,27 +333,11 @@
 
 				$threshold *= $this->threshold_k;
 
-				echo "Vengono filtrati pesi inferiori o uguali a ".$threshold."<br>";
+				echo "Vengono filtrati pesi minori stretti di ".$threshold."<br>";
 
 				foreach ($this->synset[$i]->synset_array as $key => $value) if ($value['weight'] < $threshold) unset($this->synset[$i]->synset_array[$key]);
 
 				usort($this->synset[$i]->synset_array, $sort);
-
-				//$this->out($this->synset[$i]->synset_array);
-
-				//$this->synset[$i]->synset_array = $this->multiSort($this->synset[$i]->synset_array, "weight");
-
-				/*echo "<b>".($i+1).". ".$this->header_token['header'][$i]."</b>";
-				echo "<table border='1' cellpadding='5'><tr><th>#</th><th>ID</th><th>Synset</th><th>Peso tot</th></tr>";
-
-				foreach ($this->synset[$i]->synset_array as $key => $value){
-
-					echo "<tr><td>".($key+1)."</td>";
-					echo "<td>".$value['id']."</td>";
-					echo "<td>{".implode(", ", $value['lemma'])."}</td>";
-					echo "<td>".$value['weight']."</td></tr>";
-
-				}*/
 			}
 		}
 
@@ -363,33 +347,22 @@
 
 			foreach ($this->synset as $i => $syns){
 
+				/*echo "syns";
+				$this->out($syns);*/
+
 				$all_ids = array();
 
-				foreach ($syns->synset_array as $syns_arr) $all_ids[] = $syns_arr['id'];
+				foreach ($syns->synset_array as $syns_arr) {
+
+					$this->out($syns_arr);
+					$all_ids['lemma'][] = $syns_arr['lemma'];
+					$all_ids['id'][] = $syns_arr['id'];
+				}
 
 				$this->translation[$i] = new Translation($all_ids, $this->source_lang, $this->dest_lang);
 				//$this->translation[$i]->HTMLizeErrlog();
-
 				//$this->out($this->translation[$i]->synset_array);
-
-				/*$k = 0;
-
-				echo "<b>".($i+1).". ".$this->header_token['header'][$i]."</b>";
-				echo "<table border='1' cellpadding='5'><tr><th>#</th><th>BabelID</th><th>Synset source</th><th>Synset dest</th><th>Peso tot</th></tr>";
-
-				foreach ($this->synset[$i]->synset_array as $key => $value){
-
-					echo "<tr><td>".($key+1)."</td>";
-					echo "<td>".$value['id']."</td>";
-					echo "<td>{".utf8_encode(implode(", ", $value['lemma']))."}</td>";
-					echo "<td>{".utf8_encode(implode(", ", $this->translation[$i]->synset_array[$k]['lemma']))."}</td>";
-					echo "<td>".$value['weight']."</td></tr>";
-
-					$k++;
-
-				}
-
-				echo "</table>";*/
+				//$k = 0;
 			}
 		}
 
@@ -411,7 +384,7 @@
 					
 					$abstat->query($array_lemmas);
 
-					$abstatprop = $abstat->getProperties();
+					$abstatprop = $abstat->getProperties(TRUE);
 
 					if ($abstatprop['schema'] || is_array($abstataprop['schema'])){
 						$predicates = array_merge($predicates, $abstatprop['schema']);
@@ -479,6 +452,10 @@
 
 				}
 			}
+
+			echo "<hr>";
+			$this->out($this->output);
+			$this->output = json_encode($this->output);
 		}
 
 

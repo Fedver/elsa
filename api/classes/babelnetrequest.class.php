@@ -124,6 +124,8 @@
 		// Returns the response.
 		public function getSenseByWord($word, $source_lang, $dest_lang=NULL){
 
+			global $msg;
+
 			if (!$word || !$source_lang){
 				$msg->log("002", __METHOD__, "word, source_lang");
 				$this->message	= "Error code 001: missing parameters (word or source language). [BabelNetRequest.getSenseByWord]";
@@ -156,6 +158,8 @@
 		// Returns the response.
 		public function getSynsetByID($id, $dest_lang=NULL){
 
+			global $msg;
+
 			if (!$id){
 				$msg->log("002", __METHOD__, "id");
 				$this->message	= "Error code 001: missing parameters (id). [BabelNetRequest.getSynsetByID]";
@@ -182,6 +186,8 @@
 		// Requests all the synset IDs of a given word.
 		// Returns the response.
 		public function getSynsetByWord($word, $source_lang){
+
+			global $msg;
 
 			if (!$word){
 				$msg->log("002", __METHOD__, "word");

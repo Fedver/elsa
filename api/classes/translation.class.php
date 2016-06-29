@@ -10,6 +10,7 @@
 
 	// Includes.
 	require_once("babelnetrequest.class.php");
+	require_once("bingtranslaterequest.class.php");
 
 	
 	class Translation {
@@ -38,7 +39,7 @@
 		// Requires a single word which will be the base of the synset, a source language and a destination language.
 		public function Translation ($array_id, $source_lang, $dest_lang){
 			
-			if (count($array_id) > 0 && $source_lang && $dest_lang){
+			if (is_array($array_id) && $source_lang && $dest_lang){
 				$this->source_lang		= $source_lang;
 				$this->dest_lang		= $dest_lang;
 				$this->synset_source	= $array_id;
@@ -65,16 +66,23 @@
 		private function getTranslationArray(){
 			
 			$bn = new BabelNetRequest();
+			$mt = new BingTranslateRequest();
 			$k	= 0;
 
-			foreach ($this->synset_source as $synonym_id){
+			foreach ($this->synset_source['id'] as $synonym_id){
 				
 				$response = $bn->getSynsetByID($synonym_id, $this->dest_lang);
-				//$this->out($response);
 
-				foreach ($response['senses'] as $row){
-					$this->synset_array[$k]['lemma'][]	= str_replace("_", " ", strtolower($row['lemma']));
-					$this->synset_array[$k]['source'][] = $row['source'];
+				if ($synonym_id != "void"){
+
+					foreach ($response['senses'] as $row){
+						$this->synset_array[$k]['lemma'][]	= str_replace("_", " ", strtolower($row['lemma']));
+						$this->synset_array[$k]['source'][] = $row['source'];
+					}
+				}else{
+					$this->out($this->synset_source['lemma']);
+					$this->synset_array[$k]['lemma'] = $mt->translateMany($this->synset_source['lemma'][$k], strtolower($this->source_lang), strtolower($this->dest_lang));
+					$this->synset_array[$k]['source'][] = $mt->service_name;
 				}
 
 				$this->synset_array[$k]['lemma'] = array_unique($this->synset_array[$k]['lemma']);
@@ -86,6 +94,8 @@
 					$this->synset_array[$k]['domain'][] = str_replace("_", " ", strtolower($key));
 					$this->synset_array[$k]['weight'][] = $value;
 				}*/
+
+					
 
 				$k++;
 			}

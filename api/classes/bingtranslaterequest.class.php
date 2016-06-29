@@ -24,7 +24,6 @@
 		private $query_modes;
 
 		// Public attributes.
-		public $bn_version;
 		public $service_name;
 
 		// Output attributes.
@@ -52,7 +51,7 @@
 			$this->service_name		= "Microsoft Translator v2";
 			$this->authUrl			= "https://datamarket.accesscontrol.windows.net/v2/OAuth2-13";
 			$this->url				= "http://api.microsofttranslator.com";
-			$this->apiUrl			= "/v2/Http.svc/";
+			$this->apiUrl			= "/V2/Ajax.svc/";
 			$this->http				= new HttpRequest();
 			$this->setModes();
 			$ok = $this->checkConnection();
@@ -103,6 +102,8 @@
 		// Also retrieves the authentication token, valid for 10 minutes, stored in $this->token.
 		private function checkConnection(){
 
+			global $msg;
+
 			$paramArr = array (
 									 'grant_type'    => $this->grant_type,
 									 'scope'         => $this->url,
@@ -131,6 +132,27 @@
 			}
 		}
 
+		// Filters every word in a synset, removing annoying characters that are not letters.
+		// Returns a filtered synset.
+		private function synsetFilter($synset){
+
+			for ($i = 0; $i < count($synset); $i++){
+				$synset[$i] = str_replace("(", "", $synset[$i]);
+				$synset[$i] = str_replace(")", "", $synset[$i]);
+				$synset[$i] = str_replace("_", "", $synset[$i]);
+				$synset[$i] = str_replace(",", "", $synset[$i]);
+				$synset[$i] = str_replace(".", "", $synset[$i]);
+				$synset[$i] = str_replace(";", "", $synset[$i]);
+				$synset[$i] = str_replace(":", "", $synset[$i]);
+				$synset[$i] = str_replace("+", "", $synset[$i]);
+				$synset[$i] = str_replace("*", "", $synset[$i]);
+
+				$synset[$i] = trim($synset[$i]);
+			}
+
+			return $synset;
+		}
+
 
 		//////////////////////////////////////////////////////////////////////////////////////////
 		//																						//
@@ -144,6 +166,13 @@
 			return str_replace("\n", "<br />", $this->errlog);
 		}
 
+		// Outputs a variable in a preformatted form.
+		public function out($var){
+			echo "<br><br><pre>";
+			print_r($var);
+			echo "</pre><br><br>";
+		}
+
 
 		// Perform a translation request to retrieve ad array of possible translations.
 		public function translate($word, $source_lang, $dest_lang, $max=4, $domain="general"){
@@ -155,13 +184,12 @@
 									 'maxTranslations'	=> $max
 									 /*'options'			=> "{'Category': '".$domain."'}"*/
             );
+
+			$this->out($paramArr);
 			$paramArr = http_build_query($paramArr);
 			$this->http->setPostRequest($paramArr);
 			$this->http->setURL($this->url.$this->apiUrl.$this->getMode("translates"));
-			echo $this->http->getUrl();
 			$response = $this->http->send(FALSE);
-
-			echo $this->http->HTMLizeErrlog();
 
 			return $response;
 
@@ -214,6 +242,36 @@
 			$response = $this->http->send(FALSE);
 
 			return $response;
+
+		}
+
+
+		// Perform a translation request to retrieve a single translation.
+		public function translateMany($word, $source_lang, $dest_lang, $max=10, $domain="general"){
+			
+			$paramArr = array (
+									 'text'				=> urlencode($word),
+									 'from'				=> $source_lang,
+									 'to'				=> $dest_lang,
+									 'maxTranslations'	=> $max
+									 /*'options'			=> "{'Category': '".$domain."'}"*/
+            );
+			$paramArr = http_build_query($paramArr);
+
+			$this->http->setURL($this->url.$this->apiUrl.$this->getMode("translates")."?".$paramArr);
+			$response = $this->http->send(FALSE);
+
+			preg_match_all('@"TranslatedText":"(.*?)"@i', $response, $matches, PREG_OFFSET_CAPTURE);
+			$string = NULL;
+
+			foreach ($matches[1] as $val)
+				$string .= strtolower($val[0]).",";
+
+			$string = substr($string, 0, -1);
+
+			return array_unique($this->synsetFilter(explode(",", $string)));
+
+			//return $response;
 
 		}
 

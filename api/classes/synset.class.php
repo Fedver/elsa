@@ -51,7 +51,7 @@
 				$this->synset_source	= NULL;
 				$this->getSynset();
 				
-				if (is_array($this->synset_source)){
+				if ($this->status){
 					$this->message			= "Class Synset (".$word.") instanced successfully. [Synset.Synset]";
 					$this->errlog			.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
 					$this->status			= TRUE;
@@ -82,11 +82,21 @@
 			$bn = new BabelNetRequest();
 			$response = $bn->getSynsetByWord($this->word, $this->source_lang);
 
-			foreach ($response as $row){
-				
-				$this->synset_source['sid'][] = $row['id'];
-				$this->synset_source['source'][] = $row['source'];
+			if (count($response) > 0){
 
+				foreach ($response as $row){
+				
+					$this->synset_source['sid'][] = $row['id'];
+					$this->synset_source['source'][] = $row['source'];
+					$this->synset_source['header'][] = $this->word;
+					$this->status = TRUE;
+
+				}
+			}else{
+				$this->synset_source['sid'][] = "void";
+				$this->synset_source['source'][] = "INPUT";
+				$this->synset_source['header'][] = $this->word;
+				$this->status = FALSE;
 			}
 		}
 
@@ -116,11 +126,11 @@
 			$bn = new BabelNetRequest();
 			$k	= 0;
 
-			foreach ($this->synset_source['sid'] as $synonym_id){
+			foreach ($this->synset_source['sid'] as $i => $synonym_id){
 				
 				$response = $bn->getSynsetByID($synonym_id, $this->dest_lang);
 
-				if ($this->filter_results && in_array($response['synsetType'], $this->filter)){
+				if ($synonym_id == "void" || $this->filter_results && in_array($response['synsetType'], $this->filter)){
 
 					foreach ($response['senses'] as $row){
 						$this->synset_array[$k]['lemma'][]	= str_replace("_", " ", strtolower($row['lemma']));
@@ -137,6 +147,10 @@
 						$this->synset_array[$k]['domain'][] = str_replace("_", " ", strtolower($key));
 						$this->synset_array[$k]['weight'][] = $value;
 					}
+
+					if (count($this->synset_array[$k]['lemma']) <= 0)
+						$this->synset_array[$k]['lemma'] = $this->synset_source['header'][$i];
+						$this->synset_array[$k]['id'] = $this->synset_source['sid'][$i];
 
 					$k++;
 				}

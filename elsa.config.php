@@ -9,7 +9,13 @@
 					     <nav id='nav'>
 						    <ul>
 							    <li><a href='index.php'>Home</a></li>
-								<li><a href='api/test.php'>Test</a></li>
+								<li>
+									<a href='#' class='icon fa-angle-down'>Test</a>
+								    <ul>
+									    <li><a href='api/test.php'>Synset translation (full)</a></li>
+									    <li><a href='api/partial.php'>Word translation (partial)</a></li>
+								    </ul>
+							    </li>
 							    <li>
 									<a href='#' class='icon fa-angle-down'>API</a>
 								    <ul>
@@ -17,7 +23,7 @@
 									    <li><a href='contact.html'>Documentation</a></li>
 								    </ul>
 							    </li>";
-    if ($_SESSION['user_id'] && $_SESSION['user_email'])
+    if (isset($_SESSION['user_id']) && isset($_SESSION['user_email']))
         $header_general .= "    <li>
 								    <a href='#' class='icon fa-angle-down'>".$_SESSION['user_email']."</a>
 								    <ul>

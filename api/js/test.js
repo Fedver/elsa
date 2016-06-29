@@ -1,12 +1,16 @@
 // Traduce una data parola e visualizza il risultato.
 function translate(){
 
-	var word = $("#test").val();
+	var header = $("#header").val();
+	var separator = $("#separator").val().charCodeAt(0);
+	var delimiter = $("#delimiter").val().charCodeAt(0);
+	var selected = $("#header").find('option:selected');
+	var lang = selected.data('lang'); 
 	$('#spinner_target').spin();
 
 	$.ajax({
-		url: "api.elsa.php",
-		data: { "word": word, "mode": "translate" },
+		url: "partial.elsa.php",
+		data: { "header": header, "separator": separator, "delimiter": delimiter, "mode": "translate", "lang": lang },
 		dataType: "html",
 		async: false,
 		error: function (richiesta, stato, errore) {
