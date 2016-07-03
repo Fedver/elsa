@@ -33,7 +33,7 @@
 		private $output;
 
 		// Output attributes.
-		public $message, $errlog, $status;
+		public $message, $errlog, $status, $showprogress = FALSE;
 
 		// Parameters and configuration attributes.
 		public $categ_k		= 0.6;
@@ -78,7 +78,7 @@
 					$this->retrieveMapping();
 					$this->buildOutput();
 
-					$this->out($this->output);
+					//$this->out($this->output);
 				}
 			}else{
 				$msg->log("002", __METHOD__, "header, separator, source_lang, dest_lang");
@@ -174,24 +174,24 @@
 
 				$header_categories = $header_domains = array();
 
-				echo "<b>".($i+1).". ".$this->header_token['header'][$i]."</b>";
-				echo "<table border='1' cellpadding='5'><tr><th>#</th><th>Synset</th><th>Categorie</th><th>Domini</th><th>Sources</th></tr>";
+				if ($this->showprogress) echo "<b>".($i+1).". ".$this->header_token['header'][$i]."</b>";
+				if ($this->showprogress) echo "<table border='1' cellpadding='5'><tr><th>#</th><th>Synset</th><th>Categorie</th><th>Domini</th><th>Sources</th></tr>";
 				
 				foreach ($syns->synset_array as $k => $syns_arr){
 					
-					echo "<tr><td>".($k+1)."</td>";
-					echo "<td>{".implode(", ", $syns_arr['lemma'])."}</td>";
-					echo "<td>".implode(", ", $syns_arr['category'])."</td>";
-					echo "<td>".implode(", ", $syns_arr['domain'])."</td>";
-					echo "<td>".implode(", ", $syns_arr['source'])."</td>";
-					echo "</tr>";
+					if ($this->showprogress) echo "<tr><td>".($k+1)."</td>";
+					if ($this->showprogress) echo "<td>{".implode(", ", $syns_arr['lemma'])."}</td>";
+					if ($this->showprogress) echo "<td>".implode(", ", $syns_arr['category'])."</td>";
+					if ($this->showprogress) if ($this->showprogress) echo "<td>".implode(", ", $syns_arr['domain'])."</td>";
+					if ($this->showprogress) echo "<td>".implode(", ", $syns_arr['source'])."</td>";
+					if ($this->showprogress) echo "</tr>";
 
 					for ($j = 0; $j < count($syns_arr['category']); $j++) if ($syns_arr['category'][$j]) $header_categories[] = $syns_arr['category'][$j];
 					for ($j = 0; $j < count($syns_arr['domain']); $j++) if ($syns_arr['domain'][$j]) $header_domains[] = $syns_arr['domain'][$j];
 
 				} 
 
-				echo "</table>";
+				if ($this->showprogress) echo "</table>";
 
 				$dist_categs[$i]['name'] = array_unique($header_categories);
 				foreach ($dist_categs[$i]['name'] as $k => $row) $dist_categs[$i]['weight'][$k] = 0;
@@ -199,9 +199,9 @@
 				foreach ($header_categories as $category) if ($this->categs[$i][$category] !== NULL) $this->categs[$i][$category]++;
 				array_walk($this->categs[$i], $divide, count($header_categories));
 
-				echo "Categorie (".count($header_categories).")<br>";
-				foreach ($this->categs[$i] as $key => $value) echo $key.": ".$value." (".($value * count($header_categories))." su ".count($header_categories).")<br>";
-				echo "<br><br>";
+				if ($this->showprogress) echo "Categorie (".count($header_categories).")<br>";
+				foreach ($this->categs[$i] as $key => $value) if ($this->showprogress) echo $key.": ".$value." (".($value * count($header_categories))." su ".count($header_categories).")<br>";
+				if ($this->showprogress) echo "<br><br>";
 
 				$dist_domains[$i]['name'] = array_unique($header_domains);
 				foreach ($dist_domains[$i]['name'] as $k => $row) $dist_domains[$i]['weight'][$k] = 0;
@@ -209,9 +209,9 @@
 				foreach ($header_domains as $domain) if ($this->domains[$i][$domain] !== NULL) $this->domains[$i][$domain]++;
 				array_walk($this->domains[$i], $divide, count($header_domains));
 				
-				echo "Domini (".count($header_domains).")<br>";
-				foreach ($this->domains[$i] as $key => $value) echo $key.": ".$value." (".($value * count($header_domains))." su ".count($header_domains).")<br>";
-				echo "<br><br>";
+				if ($this->showprogress) echo "Domini (".count($header_domains).")<br>";
+				foreach ($this->domains[$i] as $key => $value) if ($this->showprogress) echo $key.": ".$value." (".($value * count($header_domains))." su ".count($header_domains).")<br>";
+				if ($this->showprogress) echo "<br><br>";
 
 				$table_categories	= array_merge($table_categories, $header_categories);
 				$table_domains		= array_merge($table_domains, $header_domains);
@@ -229,9 +229,9 @@
 			foreach ($table_categories as $category) if ($this->table_categs[$category] !== NULL) $this->table_categs[$category]++;
 			array_walk($this->table_categs, $divide, count($table_categories));
 
-			echo "Categorie generali (".count($table_categories).")<br>";
-			foreach ($this->table_categs as $key => $value) echo $key.": ".$value." (".($value * count($table_categories))." su ".count($table_categories).")<br>";
-			echo "<br><br>";
+			if ($this->showprogress) echo "Categorie generali (".count($table_categories).")<br>";
+			foreach ($this->table_categs as $key => $value) if ($this->showprogress) echo $key.": ".$value." (".($value * count($table_categories))." su ".count($table_categories).")<br>";
+			if ($this->showprogress) echo "<br><br>";
 
 			$dist_domains['name'] = array_unique($table_domains);
 			foreach ($dist_domains['name'] as $k => $row) $dist_domains['weight'][$k] = 0;
@@ -239,9 +239,9 @@
 			foreach ($table_domains as $domain) if ($this->table_domains[$domain] !== NULL) $this->table_domains[$domain]++;
 			array_walk($this->table_domains, $divide, count($table_domains));
 
-			echo "Domini generali (".count($table_domains).")<br>";
-			foreach ($this->table_domains as $key => $value) echo $key.": ".$value." (".($value * count($table_domains))." su ".count($table_domains).")<br>";
-			echo "<br><br>";
+			if ($this->showprogress) echo "Domini generali (".count($table_domains).")<br>";
+			foreach ($this->table_domains as $key => $value) if ($this->showprogress) echo $key.": ".$value." (".($value * count($table_domains))." su ".count($table_domains).")<br>";
+			if ($this->showprogress) echo "<br><br>";
 		}
 
 
@@ -250,15 +250,15 @@
 			
 			for ($i = 0; $i < count($this->synset); $i++){
 
-				echo "<b>".($i+1).". ".$this->header_token['header'][$i]."</b>";
-				echo "<table border='1' cellpadding='5'><tr><th>#</th><th>Synset</th><th>Peso categ</th><th>Peso domini</th><th>Peso tot</th></tr>";
+				if ($this->showprogress) echo "<b>".($i+1).". ".$this->header_token['header'][$i]."</b>";
+				if ($this->showprogress) echo "<table border='1' cellpadding='5'><tr><th>#</th><th>Synset</th><th>Peso categ</th><th>Peso domini</th><th>Peso tot</th></tr>";
 				
 				for ($k = 0; $k < count($this->synset[$i]->synset_array); $k++){
 
 					$w_categ = $w_dom = array();
 
-					echo "<tr><td>".($k+1)."</td>";
-					echo "<td>{".implode(", ", $this->synset[$i]->synset_array[$k]['lemma'])."}</td>";
+					if ($this->showprogress) echo "<tr><td>".($k+1)."</td>";
+					if ($this->showprogress) echo "<td>{".implode(", ", $this->synset[$i]->synset_array[$k]['lemma'])."}</td>";
 
 					foreach ($this->synset[$i]->synset_array[$k]['category'] as $key => $category) {
 						$w_categ[] = count($this->synset[$i]->synset_array[$k]['category'] > 0) ? $this->categs[$i][$category] : -1;
@@ -271,17 +271,17 @@
 					$categ_weight	= max($w_categ);
 					$domain_weight	= max($w_dom);
 
-					echo "<td>".$categ_weight."</td>";
-					echo "<td>".$domain_weight."</td>";
+					if ($this->showprogress) echo "<td>".$categ_weight."</td>";
+					if ($this->showprogress) echo "<td>".$domain_weight."</td>";
 
 					$this->synset[$i]->synset_array[$k]['weight'] = ($categ_weight*$this->categ_k + $domain_weight*$this->domain_k) / 2;
 					if (!$this->synset[$i]->synset_array[$k]['weight']) $this->synset[$i]->synset_array[$k]['weight'] = "?";
 
-					echo "<td>".$this->synset[$i]->synset_array[$k]['weight']."</td></tr>";
+					if ($this->showprogress) echo "<td>".$this->synset[$i]->synset_array[$k]['weight']."</td></tr>";
 
 				}
 
-				echo "</table>";
+				if ($this->showprogress) echo "</table>";
 
 			}
 		}
@@ -298,8 +298,8 @@
 
 				$threshold = 0;
 
-				echo "<b>".($i+1).". ".$this->header_token['header'][$i]."</b>";
-				echo "<table border='1' cellpadding='5'><tr><th>#</th><th>Synset</th><th>Peso categ</th><th>Peso domini</th><th>Peso tot</th></tr>";
+				if ($this->showprogress) echo "<b>".($i+1).". ".$this->header_token['header'][$i]."</b>";
+				if ($this->showprogress) echo "<table border='1' cellpadding='5'><tr><th>#</th><th>Synset</th><th>Peso categ</th><th>Peso domini</th><th>Peso tot</th></tr>";
 				
 				for ($k = 0; $k < count($this->synset[$i]->synset_array); $k++){
 
@@ -321,19 +321,19 @@
 
 					$threshold = $this->synset[$i]->synset_array[$k]['weight'] > $threshold ? $this->synset[$i]->synset_array[$k]['weight'] : $threshold;
 
-					echo "<tr><td>".($k+1)."</td>";
-					echo "<td>{".implode(", ", $this->synset[$i]->synset_array[$k]['lemma'])."}</td>";
-					echo "<td>".$categ_weight."</td>";
-					echo "<td>".$domain_weight."</td>";
-					echo "<td>".$this->synset[$i]->synset_array[$k]['weight']."</td></tr>";
+					if ($this->showprogress) echo "<tr><td>".($k+1)."</td>";
+					if ($this->showprogress) echo "<td>{".implode(", ", $this->synset[$i]->synset_array[$k]['lemma'])."}</td>";
+					if ($this->showprogress) echo "<td>".$categ_weight."</td>";
+					if ($this->showprogress) echo "<td>".$domain_weight."</td>";
+					if ($this->showprogress) echo "<td>".$this->synset[$i]->synset_array[$k]['weight']."</td></tr>";
 
 				}
 
-				echo "</table>";
+				if ($this->showprogress) echo "</table>";
 
 				$threshold *= $this->threshold_k;
 
-				echo "Vengono filtrati pesi minori stretti di ".$threshold."<br>";
+				if ($this->showprogress) echo "Vengono filtrati pesi minori stretti di ".$threshold."<br>";
 
 				foreach ($this->synset[$i]->synset_array as $key => $value) if ($value['weight'] < $threshold) unset($this->synset[$i]->synset_array[$key]);
 
@@ -354,7 +354,7 @@
 
 				foreach ($syns->synset_array as $syns_arr) {
 
-					$this->out($syns_arr);
+					//$this->out($syns_arr);
 					$all_ids['lemma'][] = $syns_arr['lemma'];
 					$all_ids['id'][] = $syns_arr['id'];
 				}
@@ -403,22 +403,22 @@
 
 				$k = 0;
 
-				echo "<b>".($i+1).". ".$this->header_token['header'][$i]."</b>";
-				echo "<table border='1' cellpadding='5'><tr><th>#</th><th>Synset source</th><th>Synset dest</th><th>Properties</th><th>Peso</th></tr>";
+				if ($this->showprogress) echo "<b>".($i+1).". ".$this->header_token['header'][$i]."</b>";
+				if ($this->showprogress) echo "<table border='1' cellpadding='5'><tr><th>#</th><th>Synset source</th><th>Synset dest</th><th>Properties</th><th>Peso</th></tr>";
 
 				foreach ($this->synset[$i]->synset_array as $key => $value){
 
-					echo "<tr><td>".($key+1)."</td>";
-					echo "<td>{".utf8_encode(implode(", ", $value['lemma']))."}</td>";
-					echo "<td>{".utf8_encode(implode(", ", $this->translation[$i]->synset_array[$k]['lemma']))."}</td>";
-					echo "<td>{".utf8_encode(implode(", ", $this->property[$i][$k]))."}</td>";
-					echo "<td>".$value['weight']."</td></tr>";
+					if ($this->showprogress) echo "<tr><td>".($key+1)."</td>";
+					if ($this->showprogress) echo "<td>{".utf8_encode(implode(", ", $value['lemma']))."}</td>";
+					if ($this->showprogress) echo "<td>{".utf8_encode(implode(", ", $this->translation[$i]->synset_array[$k]['lemma']))."}</td>";
+					if ($this->showprogress) echo "<td>{".utf8_encode(implode(", ", $this->property[$i][$k]))."}</td>";
+					if ($this->showprogress) echo "<td>".$value['weight']."</td></tr>";
 
 					$k++;
 
 				}
 
-				echo "</table>";
+				if ($this->showprogress) echo "</table>";
 			}
 		}
 
@@ -453,8 +453,8 @@
 				}
 			}
 
-			echo "<hr>";
-			$this->out($this->output);
+			if ($this->showprogress) echo "<hr>";
+			if ($this->showprogress) $this->out($this->output);
 			$this->output = json_encode($this->output);
 		}
 
@@ -477,6 +477,11 @@
 			echo "<br><br><pre>";
 			print_r($var);
 			echo "</pre><br><br>";
+		}
+
+
+		public function getOutput(){
+			return $this->output;
 		}
 
 	} // End class.

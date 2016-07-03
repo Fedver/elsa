@@ -1,6 +1,9 @@
 <?php
 	
-include("test.setup.php");
+	include("test.setup.php");
+
+	$test = new Test($mysqli, "part");
+	$selectvalues = $test->getAllTests();
 
 ?>
 
@@ -22,14 +25,14 @@ include("test.setup.php");
 			<select id="header" name="header" style="width: 700px; height: 40px; font-size: large;">
 				<?php
 						for ($i = 0; $i < count($selectvalues); $i++){
-							echo "<option value='".$selectvalues[$i]['header']."' data-lang='".$selectvalues[$i]['lingua']."'>(".$selectvalues[$i]['titolo']." ".$selectvalues[$i]['lingua'].") ".$selectvalues[$i]['header']."</option>";
+							echo "<option value='".$selectvalues['header'][$i]."' data-lang='".$selectvalues['lingua'][$i]."'>(".$selectvalues['titolo'][$i]." ".$selectvalues['lingua'][$i].") ".$selectvalues['header'][$i]."</option>";
 						}
 
 				?>
 			</select><br />
 			<input type="text" id="separator" name="separator" placeholder="Inserire separatore" style="width: 200px; height: 40px; font-size: large;" value=";"/><br />
-			<input type="text" id="delimiter" name="delimiter" placeholder="Inserire delimitatore" style="width: 200px; height: 40px; font-size: large;" value='"' /><br />
-			<input type="button" value="Avvia il test" style="width: 110px; height: 40px; font-size: large;" onclick="translate();"/>
+			<!--<input type="text" id="delimiter" name="delimiter" placeholder="Inserire delimitatore" style="width: 200px; height: 40px; font-size: large;" value='"' /><br /> --->
+			<input type="button" value="Avvia il test" style="width: 110px; height: 40px; font-size: large;" onclick="compute();"/>
 		</form>
 		<span style="font-size: large; margin-left: 50px;">Esito:</span><br /><br />
 		<div style="font-size: large; margin-left: 50px;" id="target">

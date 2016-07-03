@@ -11,6 +11,8 @@
 
 		$p = new Parser($_REQUEST['header'], chr($_REQUEST['separator']), $_REQUEST['lang'], "EN");
 
+		echo $p->getOutput();
+
 	}
 
 ?>

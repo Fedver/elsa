@@ -286,6 +286,7 @@
 		public function query($synset){
 
 			$this->properties = array();
+			$this->distinct_words = array();
 			
 			if (!(is_array($synset) && count($synset) > 0)){
 				$this->message	= "Error code 001: missing parameters (synset).".$synset." [ABSTATRequest.query]";

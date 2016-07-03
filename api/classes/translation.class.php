@@ -80,7 +80,7 @@
 						$this->synset_array[$k]['source'][] = $row['source'];
 					}
 				}else{
-					$this->out($this->synset_source['lemma']);
+					//$this->out($this->synset_source['lemma']);
 					$this->synset_array[$k]['lemma'] = $mt->translateMany($this->synset_source['lemma'][$k], strtolower($this->source_lang), strtolower($this->dest_lang));
 					$this->synset_array[$k]['source'][] = $mt->service_name;
 				}

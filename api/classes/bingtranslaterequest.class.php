@@ -185,7 +185,7 @@
 									 /*'options'			=> "{'Category': '".$domain."'}"*/
             );
 
-			$this->out($paramArr);
+			//$this->out($paramArr);
 			$paramArr = http_build_query($paramArr);
 			$this->http->setPostRequest($paramArr);
 			$this->http->setURL($this->url.$this->apiUrl.$this->getMode("translates"));
