@@ -17,9 +17,11 @@
 		<script src='js/test.js'></script>
 		<script src='../js/spin.js'></script>
 		<script src='../js/jquery.spin.js'></script>
+		<script src="../js/bootstrap.js"></script>
+		<link rel="stylesheet" href="../css/bootstrap.css">
     </head>
     <body>
-		<a href="partial.php" target="_self">Passa al test parziale</a>
+		<a href="results.php" target="_self">Vai ai risultati</a> || <a href="partial.php" target="_self">Vai ai test parziali</a> || <a href="../index.php" target="_self">Torna alla home</a>
 		<form action="<?php $_SERVER['PHP_SELF']; ?>" method="post" style="margin: 0 auto; width: 100%; height: 300px; margin-top: 200px; text-align: center;">
 			<h1>Test completo</h1>
 			<h4>Il test viene effettuato attraverso il reperimento di synset da BabelNet, le cui categorie e domini vengono pesati per attribuire un peso. La traduzione avviene sfruttando di nuovo BabelNet, oppure Microsoft Translator nel caso il primo non fosse disponibile; i risultati sono poi confrontati con ABSTAT per il reperimento dei mapping.</h4>

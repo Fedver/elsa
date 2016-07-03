@@ -14,7 +14,7 @@
 								    <ul>
 									    <li><a href='api/test.php'>Synset translation (full)</a></li>
 									    <li><a href='api/partial.php'>Word translation (partial)</a></li>
-										<li><a href='api/partial.php'>Show test results</a></li>
+										<li><a href='api/results.php'>Show test results</a></li>
 								    </ul>
 							    </li>
 							    <li>

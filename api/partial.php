@@ -16,9 +16,11 @@
 		<script src='js/test.js'></script>
 		<script src='../js/spin.js'></script>
 		<script src='../js/jquery.spin.js'></script>
+		<script src="../js/bootstrap.js"></script>
+		<link rel="stylesheet" href="../css/bootstrap.css">
     </head>
     <body>
-		<a href="test.php" target="_self">Passa al test completo</a>
+		<a href="results.php" target="_self">Vai ai risultati</a> || <a href="test.php" target="_self">Vai ai test completi</a> || <a href="../index.php" target="_self">Torna alla home</a>
 		<form action="<?php $_SERVER['PHP_SELF']; ?>" method="post" style="margin: 0 auto; width: 100%; height: 300px; margin-top: 200px; text-align: center;">
 			<h1>Test parziale</h1>
 			<h4>Il test viene effettuato utilizzando la sola traduzione di Microsoft Translator: i risultati sono poi confrontati con ABSTAT per il reperimento dei mapping.</h4>

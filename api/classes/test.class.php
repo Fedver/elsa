@@ -79,6 +79,30 @@
 		//////////////////////////////////////////////////////////////////////////////////////////
 
 
+		private function parseResult($result_json){
+			
+			
+			$result = json_decode(stripslashes($result_json), TRUE);
+			//$this->out($result);
+
+			$parsed = NULL;
+
+			foreach ($result as $element){
+				
+				foreach ($element['predicate'] as $property){
+					$parsed .= implode("|", $property['properties']);
+					$parsed .= "|";
+				}
+
+				$parsed = substr($parsed, 0, -1);
+				$parsed .= ";";
+			}
+
+			$parsed = substr($parsed, 0, -1);
+			$parsed = str_replace("DTP ", "", $parsed);
+			$parsed = str_replace("OP ", "", $parsed);
+			return $parsed;
+		}
 		
 
 
@@ -180,8 +204,9 @@
 								"type"	=> array(),
 							);
 			
-			$sql = "SELECT gs.id, gs.headers, gs.mapping, gs.lang, gs.descr, t.api_mapping, t.date, t.where, t.type FROM gold_standards AS gs
-					INNER JOIN tests as T on gs.id = t.id_header";
+			$sql = "SELECT gs.id, gs.headers, gs.gs_mapping, gs.lang, gs.descr, t.api_mapping, t.date, t.where, t.type FROM gold_standards AS gs
+					INNER JOIN test as t on gs.id = t.id_header
+					ORDER BY t.date DESC";
 			$stmt = $this->conn->prepare($sql);
 			if (!$stmt) {
 				$this->message	= "Error code 002: statement is not valid. [Test.getAllTests]";
@@ -196,7 +221,7 @@
 							$array_result['mapping'][] 	 = $mapping;
 							$array_result['lingua'][] 	 = $lang;
 							$array_result['titolo'][] 	 = $descr;
-							$array_result['result'][] 	 = $result;
+							$array_result['result'][] 	 = $this->parseResult($result);
 							$array_result['date'][] 	 = $date;
 							$array_result['where'][] 	 = $where;
 							$array_result['type'][] 	 = $type;
