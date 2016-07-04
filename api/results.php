@@ -29,34 +29,26 @@
 				echo '<div class="panel panel-default">
 						<div class="panel-heading">
 						  <h4 class="panel-title">
-							<a data-toggle="collapse" data-parent="#accordion" href="#collapse">
+							<a data-toggle="collapse" data-parent="#accordion" href="#collapse'.$i.'">
 							'.$results['titolo'][$i].' '.$results['lingua'][$i].' ('.$results['type'][$i].') il '.$results['date'][$i].' by <b>'.$results['where'][$i].'</b>
 							</a>
 						  </h4>
 						</div>
-						<div id="collapse'.$i.'" class="panel-collapse collapse '.$in.'">
+						<div id="collapse'.$i.'" class="panel-collapse collapse">
 						 <div class="panel-body">
-						  <b>Header:</b>
-						  <table border="1" class="table">
+						  <table class="table">
 						   <tr>
+						    <td><b>Header</b></td>
 						    <td>
 						     '.str_replace(";", "</td><td>", $results['header'][$i]).'
 							</td>
 						   </tr>
-						  </table>
-						 
-						  <b>Gold Standard:</b>
-						  <table border="1" class="table">
-						   <tr>
+						    <td><b>Gold standard</b></td>
 						    <td>
 						     '.str_replace(";", "</td><td>", $results['mapping'][$i]).'
 							</td>
 						   </tr>
-						  </table>
-
-						  <b>API result:</b>
-						  <table border="1" class="table">
-						   <tr>
+						    <td><b>API result</b></td>
 						    <td>
 						     '.str_replace(";", "</td><td>", $results['result'][$i]).'
 							</td>

@@ -26,8 +26,8 @@
 			<h4>Il test viene effettuato utilizzando la sola traduzione di Microsoft Translator: i risultati sono poi confrontati con ABSTAT per il reperimento dei mapping.</h4>
 			<select id="header" name="header" style="width: 700px; height: 40px; font-size: large;">
 				<?php
-						for ($i = 0; $i < count($selectvalues); $i++){
-							echo "<option value='".$selectvalues['header'][$i]."' data-lang='".$selectvalues['lingua'][$i]."'>(".$selectvalues['titolo'][$i]." ".$selectvalues['lingua'][$i].") ".$selectvalues['header'][$i]."</option>";
+						for ($i = 0; $i < count($selectvalues['id']); $i++){
+							echo "<option value='".$selectvalues['header'][$i]."' data-lang='".$selectvalues['lingua'][$i]."' data-id='".$selectvalues['id'][$i]."' data-type='partial'>(".$selectvalues['titolo'][$i]." ".$selectvalues['lingua'][$i].") ".$selectvalues['header'][$i]."</option>";
 						}
 
 				?>

@@ -27,8 +27,8 @@
 			<h4>Il test viene effettuato attraverso il reperimento di synset da BabelNet, le cui categorie e domini vengono pesati per attribuire un peso. La traduzione avviene sfruttando di nuovo BabelNet, oppure Microsoft Translator nel caso il primo non fosse disponibile; i risultati sono poi confrontati con ABSTAT per il reperimento dei mapping.</h4>
 			<select id="header" name="header" style="width: 700px; height: 40px; font-size: large;">
 				<?php
-						for ($i = 0; $i < count($selectvalues); $i++){
-							echo "<option value='".$selectvalues['header'][$i]."' data-lang='".$selectvalues['lingua'][$i]."' data-id='".$selectvalues['id'][$i]."'>(".$selectvalues['titolo'][$i]." ".$selectvalues['lingua'][$i].") ".$selectvalues['header'][$i]."</option>";
+						for ($i = 0; $i < count($selectvalues['id']); $i++){
+							echo "<option value='".$selectvalues['header'][$i]."' data-lang='".$selectvalues['lingua'][$i]."' data-id='".$selectvalues['id'][$i]."' data-type='full'>(".$selectvalues['titolo'][$i]." ".$selectvalues['lingua'][$i].") ".$selectvalues['header'][$i]."</option>";
 						}
 
 				?>
