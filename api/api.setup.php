@@ -9,6 +9,6 @@
 	$msg = new Msghandle();
 	$test = new Test($mysqli, "save");
 
-	$mute_notices = FALSE;
+	$show_notices = TRUE;
 
 ?>

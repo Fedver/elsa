@@ -2,7 +2,7 @@
 
 	// Connection file. Needs to be included in every page requiring a DB connection.
 
-	if ($_SERVER['SERVER_NAME'] == "fedverselsa.cloudapp.net"){
+	if ($_SERVER['SERVER_NAME'] == "fedverselsa.azurewebsites.net"){
 		$host = "eu-cdbr-azure-north-e.cloudapp.net";
 		$user = "bdc5cd9bbccfff";
 		$pwd = "b47cdd29";

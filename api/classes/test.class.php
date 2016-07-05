@@ -162,8 +162,6 @@
 		
 		
 		public function saveTestResults($header_id, $api_mapping, $where, $type){
-			
-			$this->out($api_mapping);
 
 			$sql = "INSERT INTO test VALUES (NULL, ?, ?, ?, NOW(), ?)";
 			$stmt = $this->conn->prepare($sql);
@@ -211,7 +209,7 @@
 					ORDER BY t.date DESC";
 			$stmt = $this->conn->prepare($sql);
 			if (!$stmt) {
-				$this->message	= "Error code 002: statement is not valid. [Test.getAllTests]";
+				$this->message	= "Error code 002: statement is not valid. [Test.getAllTestsDone]";
 				$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
 				$this->status	= FALSE;
 			}else{
