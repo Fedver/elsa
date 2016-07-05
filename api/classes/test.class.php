@@ -65,7 +65,7 @@
 				return FALSE;
 			}else{
 				$this->conn = $mysqli;
-				$this->message	= "Class Registration instanced successfully. [Test.Test]";
+				$this->message	= "Class Test instanced successfully. [Test.Test]";
 				$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
 				$this->status	= TRUE;
 			}
@@ -163,6 +163,8 @@
 		
 		public function saveTestResults($header_id, $api_mapping, $where, $type){
 			
+			$this->out($api_mapping);
+
 			$sql = "INSERT INTO test VALUES (NULL, ?, ?, ?, NOW(), ?)";
 			$stmt = $this->conn->prepare($sql);
 			if (!$stmt) {

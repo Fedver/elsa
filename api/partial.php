@@ -34,7 +34,7 @@
 			</select><br />
 			<input type="text" id="separator" name="separator" placeholder="Inserire separatore" style="width: 200px; height: 40px; font-size: large;" value=";"/><br />
 			<!--<input type="text" id="delimiter" name="delimiter" placeholder="Inserire delimitatore" style="width: 200px; height: 40px; font-size: large;" value='"' /><br /> --->
-			<input type="button" value="Avvia il test" style="width: 110px; height: 40px; font-size: large;" onclick="compute();"/>
+			<input type="button" value="Avvia il test" style="width: 110px; height: 40px; font-size: large;" onclick="translate();"/>
 		</form>
 		<span style="font-size: large; margin-left: 50px;">Esito:</span><br /><br />
 		<div style="font-size: large; margin-left: 50px;" id="target">

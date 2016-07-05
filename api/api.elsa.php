@@ -1,11 +1,8 @@
 <?php
 	
-	ini_set('max_execution_time', 1000);
-
-	require_once("classes/msghandle.class.php");
-	$msg = new Msghandle();
+	require_once("api.setup.php");
 	
-	if ($_REQUEST['mode'] == "compute"){
+	if (isset($_REQUEST['id']) && isset($_REQUEST['type'])){
 
 		require("classes/parser.class.php");
 
@@ -13,6 +10,9 @@
 
 		echo $p->getOutput();
 
-	}
+		$test->saveTestResults($_REQUEST['id'], $p->getOutput(), $_SERVER['SERVER_NAME'], $_REQUEST['type']);
+		echo "Test salvato con successo!<br>".$test->HTMLizeErrlog();
 
+	}else
+		echo "Errore: parametri mancanti. ID: ".$_REQUEST['id'].", type: ".$_REQUEST['type'].".";
 ?>

@@ -3,15 +3,16 @@ function translate(){
 
 	var header = $("#header").val();
 	var separator = $("#separator").val().charCodeAt(0);
-	//var delimiter = $("#delimiter").val().charCodeAt(0);
-	var delimiter = ".";
 	var selected = $("#header").find('option:selected');
 	var lang = selected.data('lang'); 
+	var id = selected.data('id');
+	var type = selected.data('type');
+	var mapping = "";
 	$('#spinner_target').spin();
 
 	$.ajax({
 		url: "partial.elsa.php",
-		data: { "header": header, "separator": separator, "delimiter": delimiter, "mode": "translate", "lang": lang },
+		data: { "header": header, "separator": separator, "lang": lang, "id": id, "type": type },
 		dataType: "html",
 		async: false,
 		error: function (richiesta, stato, errore) {
@@ -31,8 +32,6 @@ function compute(){
 
 	var header = $("#header").val();
 	var separator = $("#separator").val().charCodeAt(0);
-	//var delimiter = $("#delimiter").val().charCodeAt(0);
-	var delimiter = ".";
 	var selected = $("#header").find('option:selected');
 	var lang = selected.data('lang'); 
 	var id = selected.data('id');
@@ -42,7 +41,7 @@ function compute(){
 
 	$.ajax({
 		url: "api.elsa.php",
-		data: { "header": header, "separator": separator, "delimiter": delimiter, "mode": "compute", "lang": lang },
+		data: { "header": header, "separator": separator, "lang": lang, "id": id, "type": type },
 		dataType: "html",
 		async: false,
 		error: function (richiesta, stato, errore) {
@@ -51,12 +50,11 @@ function compute(){
 		},
 		success: function (data, stato) {
 			$("#target").html(data);
-			mapping = data;
 			$('#spinner_target').spin(false);
 		}
 	});
 
-	alert("Fine parsing.");
+	/*alert("Fine parsing.");
 
 
 	if (mapping != "") {
@@ -75,7 +73,7 @@ function compute(){
 				$('#spinner_target').spin(false);
 			}
 		});
-	}
+	}*/
 
 
 }
