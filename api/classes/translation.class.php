@@ -87,16 +87,6 @@
 
 				$this->synset_array[$k]['lemma'] = array_unique($this->synset_array[$k]['lemma']);
 
-				/*foreach ($response['categories'] as $row)
-					$this->synset_array[$k]['category'][] = str_replace("_", " ", strtolower($row['category']));
-
-				foreach ($response['domains'] as $key => $value){
-					$this->synset_array[$k]['domain'][] = str_replace("_", " ", strtolower($key));
-					$this->synset_array[$k]['weight'][] = $value;
-				}*/
-
-					
-
 				$k++;
 			}
 		}

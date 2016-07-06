@@ -134,6 +134,7 @@
 
 					foreach ($response['senses'] as $row){
 						$this->synset_array[$k]['lemma'][]	= str_replace("_", " ", strtolower($row['lemma']));
+						
 						$this->synset_array[$k]['source'][] = $row['source'];
 						$this->synset_array[$k]['id']		= $row['synsetID']['id'];
 					}

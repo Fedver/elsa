@@ -30,7 +30,7 @@
 						<div class="panel-heading">
 						  <h4 class="panel-title">
 							<a data-toggle="collapse" data-parent="#accordion" href="#collapse'.$i.'">
-							'.$results['titolo'][$i].' '.$results['lingua'][$i].' ('.$results['type'][$i].') il '.$results['date'][$i].' by <b>'.$results['where'][$i].'</b>
+							<b>'.$results['titolo'][$i].'</b> '.$results['lingua'][$i].' <b>('.$results['type'][$i].')</b> il '.$results['date'][$i].' by '.$results['where'][$i].'
 							</a>
 						  </h4>
 						</div>

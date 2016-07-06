@@ -178,7 +178,7 @@
 		public function translate($word, $source_lang, $dest_lang, $max=4, $domain="general"){
 			
 			$paramArr = array (
-									 'text'				=> urlencode($word),
+									 'text'				=> $word,
 									 'from'				=> $source_lang,
 									 'to'				=> $dest_lang,
 									 'maxTranslations'	=> $max
@@ -200,7 +200,7 @@
 		public function detect($word){
 			
 			$paramArr = array (
-									 'text'	=> urlencode($word)
+									 'text'	=> $word
             );
 			$paramArr = http_build_query($paramArr);
 
@@ -232,7 +232,7 @@
 		public function translateSingle($word, $source_lang, $dest_lang){
 			
 			$paramArr = array (
-									 'text'		=> urlencode($word),
+									 'text'		=> $word,
 									 'from'		=> $source_lang,
 									 'to'		=> $dest_lang
             );
@@ -250,7 +250,7 @@
 		public function translateMany($word, $source_lang, $dest_lang, $max=10, $domain="general"){
 			
 			$paramArr = array (
-									 'text'				=> urlencode($word),
+									 'text'				=> $word,
 									 'from'				=> $source_lang,
 									 'to'				=> $dest_lang,
 									 'maxTranslations'	=> $max
@@ -260,6 +260,8 @@
 
 			$this->http->setURL($this->url.$this->apiUrl.$this->getMode("translates")."?".$paramArr);
 			$response = $this->http->send(FALSE);
+
+			//$this->out($response);
 
 			preg_match_all('@"TranslatedText":"(.*?)"@i', $response, $matches, PREG_OFFSET_CAPTURE);
 			$string = NULL;

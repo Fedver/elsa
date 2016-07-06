@@ -45,7 +45,7 @@ function compute(){
 		dataType: "html",
 		async: false,
 		error: function (richiesta, stato, errore) {
-			alert("Error during server connection, please retry. " + errore + stato + richiesta);
+			alert("Error during server connection, please retry. Errore: " + errore + ", stato: " + stato + "richiesta.status: " + richiesta.status + "richiesta.responseText: " + richiesta.responseText);
 			$('#spinner_target').spin(false);
 		},
 		success: function (data, stato) {

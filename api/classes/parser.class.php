@@ -33,7 +33,7 @@
 		private $output;
 
 		// Output attributes.
-		public $message, $errlog, $status, $showprogress = FALSE;
+		public $message, $errlog, $status, $showprogress;
 
 		// Parameters and configuration attributes.
 		public $categ_k		= 0.6;
@@ -66,6 +66,7 @@
 					$this->dest_lang		= $dest_lang;
 					$this->header_array		= 
 					$this->header_token		= array();
+					$this->showprogress		= FALSE;
 					$msg->log("998", __METHOD__);
 					$this->message			= "Class Parser instanced successfully. [Parser.Parser]";
 					$this->errlog			.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
@@ -78,7 +79,7 @@
 					$this->retrieveMapping();
 					$this->buildOutput();
 
-					//$this->out($this->output);
+					if ($this->showprogress) $this->HTMLizeErrlog();
 				}
 			}else{
 				$msg->log("002", __METHOD__, "header, separator, source_lang, dest_lang");
@@ -102,15 +103,6 @@
 			$harray = explode($this->separator, $this->header_string);
 			foreach ($harray as $field) if ($field) $this->header_array[] = trim($field);
 			
-			/*$exp_delimiter = explode($this->delimiter, $this->header_string);
-
-			foreach ($exp_delimiter as $delimited){
-				
-				$exp_separator = explode($this->separator, $delimited);
-
-				foreach ($exp_separator as $field) if ($field) $this->header_array[] = $field;
-
-			}*/
 		}
 
 
@@ -122,7 +114,7 @@
 				$synset = new Synset($value, $this->source_lang, $this->source_lang);
 				
 				$this->header_token['token'][$key]	= $synset->status ? "WN" : "CN";
-				$this->header_token['header'][$key]	= $this->header_token['token'][$key] == "CN" ? $this->processCN($value) : strtolower($value);
+				$this->header_token['header'][$key]	= $this->header_token['token'][$key] == "CN" ? $this->processCN($value) : $value;
 
 			}
 		}
@@ -147,7 +139,7 @@
 				}
 			}
 
-			return trim(strtolower($output));
+			return trim($output);
 
 		}
 
@@ -428,21 +420,27 @@
 			
 			for ($i = 0; $i < count($this->translation); $i++){
 
-				$this->output[$i]['header'] = $this->header_token['header'][$i];
+				$this->output[$i]['header'] = $this->header_array[$i];
 
 				$properties = array();
 
 				for ($k = 0; $k < count($this->translation[$i]->synset_array); $k++){
 
 					$addweight = FALSE;
+
+					if (count($this->property[$i]) > 0){
 					
-					foreach ($this->property[$i][$k] as $property){
+						foreach ($this->property[$i][$k] as $property){
 						
-						if (!in_array($property, $properties)) {
-							$properties[] = $property;
-							$this->output[$i]['predicate'][$k]['properties'][] = $property;
-							$addweight = TRUE;
-						}else	$addweight = FALSE;
+							if (!in_array($property, $properties)) {
+								$properties[] = $property;
+								$this->output[$i]['predicate'][$k]['properties'][] = $property;
+								$addweight = TRUE;
+							}else	$addweight = FALSE;
+						}
+					}else{
+						$this->output[$i]['predicate'][$k]['properties'][] = "";
+						$addweight = TRUE;
 					}
 
 					//$properties = array_merge($properties, $this->property[$i][$k]);
@@ -455,7 +453,18 @@
 
 			if ($this->showprogress) echo "<hr>";
 			if ($this->showprogress) $this->out($this->output);
-			$this->output = json_encode($this->output);
+			//$this->output = json_encode($this->output, JSON_PARTIAL_OUTPUT_ON_ERROR);
+			$this->output = json_encode($this->output, JSON_UNESCAPED_UNICODE);
+
+			if (json_last_error_msg()){
+				$this->message	= "Error JSON: ".json_last_error_msg().". [Parser.buildOutput]";
+				$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
+				$this->status	= FALSE;
+			}else{
+				$this->message	= "Parsing successful!. [Parser.buildOutput]";
+				$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
+				$this->status	= TRUE;
+			}
 		}
 
 
@@ -482,6 +491,17 @@
 
 		public function getOutput(){
 			return $this->output;
+		}
+
+
+		public function showMessages($parameter){
+
+			if (is_bool($parameter)) $this->showprogress = $parameter;
+			else{
+				$this->message			= "Parameter is not boolean. [Parser.showMessages]";
+				$this->errlog			.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
+				$this->status			= FALSE;
+			}
 		}
 
 	} // End class.
