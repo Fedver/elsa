@@ -23,7 +23,7 @@
 		private $domains;
 		private $categs;
 		private $synset;
-		private $weight;
+		//private $weight;
 		private $table_categs;
 		private $table_domains;
 		private $source_lang;
@@ -99,9 +99,9 @@
 
 		// Transforms a header in form of string into an array of headers.
 		private function headerToArray(){
-
+			
 			$harray = explode($this->separator, $this->header_string);
-			foreach ($harray as $field) if ($field) $this->header_array[] = trim($field);
+			foreach ($harray as $field) if ($field) $this->header_array[] = trim(iconv(mb_detect_encoding($field), "UTF-8//TRANSLIT", $field));
 			
 		}
 
@@ -436,11 +436,11 @@
 								$properties[] = $property;
 								$this->output[$i]['predicate'][$k]['properties'][] = $property;
 								$addweight = TRUE;
-							}else	$addweight = FALSE;
+							}else	$addweight = TRUE;
 						}
 					}else{
 						$this->output[$i]['predicate'][$k]['properties'][] = "";
-						$addweight = TRUE;
+						$addweight = FALSE;
 					}
 
 					//$properties = array_merge($properties, $this->property[$i][$k]);

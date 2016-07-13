@@ -11,7 +11,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="utf-8" />
+		<meta charset="utf-8" />
         <title>ELSA test</title>
 		<script src='../js/jquery.min.js'></script>
 		<script src='js/test.js'></script>

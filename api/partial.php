@@ -3,6 +3,7 @@
 	include("test.setup.php");
 
 	$test = new Test($mysqli, "part");
+	
 	$selectvalues = $test->getAllTests();
 
 ?>
