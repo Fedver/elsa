@@ -378,7 +378,7 @@
 
 					$abstatprop = $abstat->getProperties(TRUE);
 
-					if ($abstatprop['schema'] || is_array($abstataprop['schema'])){
+					if ($abstatprop['schema'] || is_array($abstatprop['schema'])){
 						$predicates = array_merge($predicates, $abstatprop['schema']);
 						$predicates = array_unique($predicates);
 						$this->property[$i][$k] = $predicates;
@@ -495,7 +495,6 @@
 
 
 		public function showMessages($parameter){
-
 			if (is_bool($parameter)) $this->showprogress = $parameter;
 			else{
 				$this->message			= "Parameter is not boolean. [Parser.showMessages]";

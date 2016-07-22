@@ -7,8 +7,9 @@ function translate(){
 	var lang = selected.data('lang'); 
 	var id = selected.data('id');
 	var type = selected.data('type');
-	var mapping = "";
 	$('#spinner_target').spin();
+	var begin_time = $.now();
+	var end_time;
 
 	$.ajax({
 		url: "partial.elsa.php",
@@ -24,6 +25,9 @@ function translate(){
 			$('#spinner_target').spin(false);
 		}
 	});
+
+	end_time = $.now();
+	$("#esito").html("Esito (" + transformTime(begin_time, end_time) + "):");
 }
 
 
@@ -36,7 +40,8 @@ function compute(){
 	var lang = selected.data('lang'); 
 	var id = selected.data('id');
 	var type = selected.data('type');
-	var mapping = "";
+	var begin_time = $.now();
+	var end_time;
 	$('#spinner_target').spin();
 
 	$.ajax({
@@ -54,26 +59,21 @@ function compute(){
 		}
 	});
 
-	/*alert("Fine parsing.");
+	end_time = $.now();
+	$("#esito").html("Esito (" + transformTime(begin_time, end_time) + "):");
+
+}
 
 
-	if (mapping != "") {
-		$('#spinner_target').spin();
-		$.ajax({
-			url: "ajax.savetest.php",
-			data: { "id": id, "mapping": mapping, "type": type },
-			dataType: "html",
-			async: false,
-			error: function (richiesta, stato, errore) {
-				alert("Error during server connection, please retry. " + errore + stato + richiesta);
-				$('#spinner_target').spin(false);
-			},
-			success: function (data, stato) {
-				alert(data);
-				$('#spinner_target').spin(false);
-			}
-		});
-	}*/
+function transformTime(start_time, end_time){
+
+	var duration = (end_time - start_time) / 1000;
+
+	if (duration > 300){
+		return Math.round(duration / 60) + " minuti";
+	}else{
+		return Math.round(duration) + " secondi";
+	}
 
 
 }

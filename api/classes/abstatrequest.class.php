@@ -315,7 +315,6 @@
 						$request = $this->reverseURLFormat($this->url.$this->buildQueryString("query", $params));
 						$this->http->setURL($request);
 						$response = $this->http->send(TRUE);
-						$iterat++;
 
 						foreach ($response['results'] as $result){
 							foreach ($result as $element) {

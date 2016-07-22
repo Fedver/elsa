@@ -25,6 +25,8 @@
 		<div class="panel-group" id="accordion">
 			<?php 
 			for ($i= 0; $i < count($results['id']); $i++){
+
+				list($precision, $recall, $fmeasure, $ndcg) = $test->calcIndicators($results['mapping'][$i], $results['result'][$i], $results['type'][$i]);
 					
 				echo '<div class="panel panel-default">
 						<div class="panel-heading">
@@ -45,7 +47,7 @@
 						   </tr>
 						    <td><b>Gold standard</b></td>
 						    <td>
-						     '.str_replace(";", "</td><td>", $results['mapping'][$i]).'
+						     '.str_replace(";", "</td><td>", $test->removeWeights($results['mapping'][$i])).'
 							</td>
 						   </tr>
 						    <td><b>API result</b></td>
@@ -54,11 +56,35 @@
 							</td>
 						   </tr>
 						  </table>
+						  <div>
+						   <b>Precision:</b> '.$precision.'<br />
+						   <b>Recall:</b> '.$recall.'<br />
+						   <b>F-Measure:</b> '.$fmeasure.'<br />
+						   <b>nDCG:</b> '.$ndcg.'<br />
+						  </div>
 						 </div>
 						</div>
 					  </div>';
 			}
 			?>
+		</div>
+		<?php
+			list($final_precision_full, $final_recall_full, $final_fmeasure_full, $final_ndcg_full) = $test->getFinalEvaluation("full");
+			list($final_precision_part, $final_recall_part, $final_fmeasure_part, $final_ndcg_part) = $test->getFinalEvaluation("partial");
+		?>
+		Medie (full):<br />
+		<div>
+			<b>Precision:</b> <?php echo $final_precision_full; ?><br />
+			<b>Recall:</b> <?php echo $final_recall_full; ?><br />
+			<b>F-Measure:</b> <?php echo $final_fmeasure_full; ?><br />
+			<b>nDCG:</b> <?php echo $final_ndch_full; ?><br />
+		</div>
+		<br />Medie (partial):<br />
+		<div>
+			<b>Precision:</b> <?php echo $final_precision_part; ?><br />
+			<b>Recall:</b> <?php echo $final_recall_part; ?><br />
+			<b>F-Measure:</b> <?php echo $final_fmeasure_part; ?><br />
+			<b>nDCG:</b> <?php echo $final_ndch_part; ?><br />
 		</div>
     </body>
 </html>

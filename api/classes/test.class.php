@@ -32,8 +32,8 @@
 		private $conn;
 
 		// Public attributes.
-		public $user_id;
-		public $user_email;
+		public $full, $partial;
+
 
 		// Output attributes.
 		public $message, $errlog, $status;
@@ -51,6 +51,12 @@
 		public function Test($mysqli, $type){
 
 			$this->message = $this->errlog = NULL;
+            $this->full['precision']    =
+            $this->full['recall']       =
+            $this->full['count']        =
+            $this->partial['precision'] =
+            $this->partial['recall']    =
+            $this->partial['count']     = 0;
 			
 			if (!isset($mysqli) || !$mysqli){
 				$this->message	= "Error code 000: connection resource is not set. [Test.Test]";
@@ -79,31 +85,116 @@
 		//////////////////////////////////////////////////////////////////////////////////////////
 
 
-		private function parseResult($result_json){
+		private function parseResult($result_json, $result_type){
 			
 			
 			$result = json_decode(stripslashes($result_json), TRUE);
-			//$this->out($result);
 
 			$parsed = NULL;
 
-			foreach ($result as $element){
-				
-				foreach ($element['predicate'] as $property){
-					$parsed .= implode("|", $property['properties']);
-					$parsed .= "|";
-				}
+            switch ($result_type) {
+                case "full":        foreach ($result as $element) {
 
-				$parsed = substr($parsed, 0, -1);
-				$parsed .= ";";
-			}
+                                        foreach ($element['predicate'] as $property) {
+                                            $parsed .= implode("|", $property['properties']);
+                                            $parsed .= "|";
+                                        }
 
-			$parsed = substr($parsed, 0, -1);
-			$parsed = str_replace("DTP ", "", $parsed);
-			$parsed = str_replace("OP ", "", $parsed);
+                                        $parsed = substr($parsed, 0, -1);
+                                        $parsed .= ";";
+                                    }
+
+                                    $parsed = substr($parsed, 0, -1);
+                                    $parsed = str_replace("DTP ", "", $parsed);
+                                    $parsed = str_replace("OP ", "", $parsed);
+                                    break;
+
+                case "partial":     foreach ($result as $element) {
+
+                                        $parsed .= implode("|", $element['properties']);
+                                        $parsed .= ";";
+                                    }
+
+                                    $parsed = substr($parsed, 0, -1);
+                                    $parsed = str_replace("DTP ", "", $parsed);
+                                    $parsed = str_replace("OP ", "", $parsed);
+                                    break;
+            }
+
+            while (strstr($parsed, "||") != FALSE) $parsed = str_replace("||", "|", $parsed);
+            while (strstr($parsed, "|;") != FALSE) $parsed = str_replace("|;", ";", $parsed);
+            while (strstr($parsed, ";|") != FALSE) $parsed = str_replace(";|", ";", $parsed);
 			return $parsed;
 		}
-		
+
+
+		private function FMeasure($precision, $recall){
+
+		    return (2 * $precision * $recall) / ($precision + $recall);
+
+        }
+
+
+        private function parseWeightCSV($csv, $response){
+
+            $csv_output = $res_output = array();
+            $headers = explode(";", $csv);
+            $results = explode(";", $response);
+
+            for ($i = 0; $i < count($headers); $i++){
+
+                $properties = explode("|", $headers[$i]);
+
+                for ($k = 0; $k < count($properties); $k++){
+
+                    $property = substr($properties[$k], 0, -2);
+                    $csv_output[$i][$k]['property'] = $property;
+                    $csv_output[$i][$k]['weight'] = substr($properties[$k], -1);
+
+                }
+            }
+
+            for ($i = 0; $i < count($results); $i++){
+
+                $properties = explode("|", $results[$i]);
+
+                for ($k = 0; $k < count($properties); $k++){
+
+                    $res_output[$i][$k]['property'] = $properties[$k];
+
+                    for ($j = 0; $j < count($properties); $j++){
+
+                        if ($csv_output[$i][$j]['property'] == $res_output[$i][$k]['property']) $res_output[$i][$k]['weight'] = $csv_output[$i][$j]['weight'];
+                    }
+
+                }
+            }
+
+            return array($csv_output, $res_output);
+
+        }
+
+
+        private function DCG($rel_prop){
+
+            $dcg = array();
+
+            for ($i = 0; $i < count($rel_prop); $i++){
+
+                $dcg[$i] = $rel_prop[$i][0]['weight'];
+
+                for ($k = 1; $k < count($rel_prop[$i]); $k++)
+                    $dcg[$i] += $rel_prop[$i][$k]['weight'] / log(($k+1), 2);
+            }
+
+            return $dcg;
+
+        }
+
+
+        private function arrayMean($array){
+            return (array_sum($array) /count($array));
+        }
 
 
 		//////////////////////////////////////////////////////////////////////////////////////////
@@ -154,6 +245,8 @@
 							$array_result['titolo'][] 	 = $descr;
 				}	
 				$stmt->close();
+
+                $array_result = array_filter($array_result);
 				
 				return $array_result;
 			}
@@ -221,7 +314,7 @@
 							$array_result['mapping'][] 	 = $mapping;
 							$array_result['lingua'][] 	 = $lang;
 							$array_result['titolo'][] 	 = $descr;
-							$array_result['result'][] 	 = $this->parseResult($result);
+							$array_result['result'][] 	 = $this->parseResult($result, $type);
 							$array_result['date'][] 	 = $date;
 							$array_result['where'][] 	 = $where;
 							$array_result['type'][] 	 = $type;
@@ -230,8 +323,111 @@
 				
 				return $array_result;
 			}
-
 		}
+
+
+		public function calcIndicators($mapping, $results, $type){
+
+		    $map_noweights = $this->removeWeights($mapping);
+
+            $count_mapping = 0;
+            $array_mapping = explode(";", $map_noweights);
+            for ($i = 0; $i < count($array_mapping); $i++){
+                if ($array_mapping[$i]) {
+                    $array_mapping[$i] = array_filter(explode("|", $array_mapping[$i]));
+                    $count_mapping += count($array_mapping[$i]);
+                }
+            }
+
+            $count_results = 0;
+            $array_results = explode(";", $results);
+            for ($i = 0; $i < count($array_results); $i++){
+                if ($array_results[$i]) {
+                    $array_results[$i] = array_filter(explode("|", $array_results[$i]));
+                    $count_results += count($array_results[$i]);
+                }
+            }
+
+            $count_found = 0;
+            for ($i = 0; $i < count($array_mapping); $i++){
+                for ($k = 0; $k < count($array_mapping[$i]); $k++) {
+                    if (in_array($array_mapping[$i][$k], $array_results[$i])) {
+                        $count_found += 1;
+                    }
+                }
+            }
+
+            $precision = $count_found / $count_results;
+            $recall = $count_found / $count_mapping;
+
+
+            list($map_arr, $res_arr) = $this->parseWeightCSV($mapping, $results);
+
+            $dcg = $this->arrayMean($this->DCG($res_arr));
+            $idcg = $this->arrayMean($this->DCG($map_arr));
+
+            $ndcg = $dcg / $idcg;
+
+            switch ($type) {
+                case "full":        $this->full['precision'] += $precision;
+                                    $this->full['recall'] += $recall;
+                                    $this->full['count'] ++;
+                                    $this->full['ndcg'] += $ndcg;
+                                    break;
+
+                case "partial":     $this->partial['precision'] += $precision;
+                                    $this->partial['recall'] += $recall;
+                                    $this->partial['count'] ++;
+                                    $this->partial['ndcg'] += $ndcg;
+                                    break;
+            }
+
+            $fmeasure = $this->FMeasure($precision, $recall);
+
+            return array($precision, $recall, $fmeasure, $ndcg);
+
+        }
+
+
+        public function getFinalEvaluation($type){
+
+            switch ($type) {
+                case "full":        $precision = $this->full['precision'] /= $this->full['count'];
+                                    $recall = $this->full['recall'] /= $this->full['count'];
+                                    $ndcg = $this->full['ndcg'] /= $this->full['count'];
+                                    break;
+
+                case "partial":     $precision = $this->partial['precision'] /= $this->partial['count'];
+                                    $recall = $this->partial['recall'] /= $this->partial['count'];
+                                    $ndcg = $this->partial['ndcg'] /= $this->full['count'];
+                                    break;
+            }
+
+            $fmeasure = $this->FMeasure($precision, $recall);
+
+            return array($precision, $recall, $fmeasure, $ndcg);
+        }
+
+
+        public function removeWeights($csv){
+
+            $headers = explode(";", $csv);
+
+            for ($i = 0; $i < count($headers); $i++){
+
+                $properties = explode("|", $headers[$i]);
+
+                for ($k = 0; $k < count($properties); $k++){
+
+                    $properties[$k] = substr($properties[$k], 0, -2);
+
+                }
+
+                $headers[$i] = implode("|", $properties);
+            }
+
+            return implode(";", $headers);
+        }
 
 	} // End class.
 

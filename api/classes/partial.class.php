@@ -33,7 +33,7 @@
 		private $output;
 
 		// Output attributes.
-		public $message, $errlog, $status;
+		public $message, $errlog, $status, $showprogress;
 
 		// Parameters and configuration attributes.
 		public $categ_k		= 0.6;
@@ -66,6 +66,7 @@
 					$this->dest_lang		= $dest_lang;
 					$this->header_array		= 
 					$this->header_token		= array();
+					$this->showprogress		= FALSE;
 					$msg->log("998", __METHOD__);
 					$this->message			= "Class Parser instanced successfully. [Partial.Partial]";
 					$this->errlog			.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
@@ -164,7 +165,7 @@
 
 				$abstatprop = $abstat->getProperties(TRUE);
 
-				if ($abstatprop['schema'] || is_array($abstataprop['schema'])){
+				if ($abstatprop['schema'] || is_array($abstatprop['schema'])){
 					$predicates = array_merge($predicates, $abstatprop['schema']);
 					$predicates = array_unique($predicates);
 					$this->header_array['properties'][$i] = $predicates;
@@ -179,10 +180,22 @@
 			
 			foreach ($this->header_array['lemma'] as $i => $row){
 
-					$this->output[$i]['header'] = $row;
-					$this->output[$i]['properties'] = $this->header_array['properties'][$i];
+				$this->output[$i]['header'] = $row;
+				$this->output[$i]['properties'] = $this->header_array['properties'][$i];
 
-				}
+			}
+
+			$this->output = json_encode($this->output, JSON_UNESCAPED_UNICODE);
+
+			if (json_last_error_msg()){
+				$this->message	= "Error JSON: ".json_last_error_msg().". [Parser.buildOutput]";
+				$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
+				$this->status	= FALSE;
+			}else{
+				$this->message	= "Parsing successful!. [Parser.buildOutput]";
+				$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
+				$this->status	= TRUE;
+			}
 
 		}
 
@@ -205,6 +218,21 @@
 			echo "<br><br><pre>";
 			print_r($var);
 			echo "</pre><br><br>";
+		}
+
+
+		public function getOutput(){
+			return $this->output;
+		}
+
+
+		public function showMessages($parameter){
+			if (is_bool($parameter)) $this->showprogress = $parameter;
+			else{
+				$this->message			= "Parameter is not boolean. [Parser.showMessages]";
+				$this->errlog			.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
+				$this->status			= FALSE;
+			}
 		}
 
 	} // End class.

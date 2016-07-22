@@ -37,7 +37,7 @@
 			<!--<input type="text" id="delimiter" name="delimiter" placeholder="Inserire delimitatore" style="width: 200px; height: 40px; font-size: large;" value='"' /><br /> --->
 			<input type="button" value="Avvia il test" style="width: 110px; height: 40px; font-size: large;" onclick="compute();"/>
 		</form>
-		<span style="font-size: large; margin-left: 50px;">Esito:</span><br /><br />
+		<span style="font-size: large; margin-left: 50px;" id="esito">Esito:</span><br /><br />
 		<div style="font-size: large; margin-left: 50px;" id="target">
 		Qui viene visualizzato l'esito
 		</div>
