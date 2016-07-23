@@ -7,13 +7,14 @@ function translate(){
 	var lang = selected.data('lang'); 
 	var id = selected.data('id');
 	var type = selected.data('type');
-	$('#spinner_target').spin();
 	var begin_time = $.now();
 	var end_time;
+	var key = "26dd085d7c92131ed4e463598c3fb23417a888ec";
+	$('#spinner_target').spin();
 
 	$.ajax({
 		url: "partial.elsa.php",
-		data: { "header": header, "separator": separator, "lang": lang, "id": id, "type": type },
+		data: { "header": header, "separator": separator, "lang": lang, "id": id, "type": type, "key": key },
 		dataType: "html",
 		async: false,
 		error: function (richiesta, stato, errore) {
@@ -42,11 +43,12 @@ function compute(){
 	var type = selected.data('type');
 	var begin_time = $.now();
 	var end_time;
+	var key = "26dd085d7c92131ed4e463598c3fb23417a888ec";
 	$('#spinner_target').spin();
 
 	$.ajax({
 		url: "api.elsa.php",
-		data: { "header": header, "separator": separator, "lang": lang, "id": id, "type": type },
+		data: { "header": header, "separator": separator, "lang": lang, "id": id, "type": type, "key": key },
 		dataType: "html",
 		async: false,
 		error: function (richiesta, stato, errore) {

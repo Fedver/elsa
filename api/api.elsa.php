@@ -14,6 +14,8 @@
 		$test->saveTestResults($_REQUEST['id'], $p->getOutput(), $_SERVER['SERVER_NAME'], $_REQUEST['type']);
 		if ($show_notices) echo "Test salvato con successo!<br>".$test->HTMLizeErrlog();
 
+        $acc->addHeaders($p->header_count);
+
 	}else
 		echo "Errore: parametri mancanti. ID: ".$_REQUEST['id'].", type: ".$_REQUEST['type'].".";
 ?>

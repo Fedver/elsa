@@ -60,7 +60,7 @@
 						   <b>Precision:</b> '.$precision.'<br />
 						   <b>Recall:</b> '.$recall.'<br />
 						   <b>F-Measure:</b> '.$fmeasure.'<br />
-						   <b>nDCG:</b> '.$ndcg.'<br />
+						   <b>nDCG medio:</b> '.$ndcg.'<br />
 						  </div>
 						 </div>
 						</div>
@@ -77,14 +77,14 @@
 			<b>Precision:</b> <?php echo $final_precision_full; ?><br />
 			<b>Recall:</b> <?php echo $final_recall_full; ?><br />
 			<b>F-Measure:</b> <?php echo $final_fmeasure_full; ?><br />
-			<b>nDCG:</b> <?php echo $final_ndch_full; ?><br />
+			<b>nDCG:</b> <?php echo $final_ndcg_full; ?><br />
 		</div>
 		<br />Medie (partial):<br />
 		<div>
 			<b>Precision:</b> <?php echo $final_precision_part; ?><br />
 			<b>Recall:</b> <?php echo $final_recall_part; ?><br />
 			<b>F-Measure:</b> <?php echo $final_fmeasure_part; ?><br />
-			<b>nDCG:</b> <?php echo $final_ndch_part; ?><br />
+			<b>nDCG:</b> <?php echo $final_ndcg_part; ?><br />
 		</div>
     </body>
 </html>

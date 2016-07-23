@@ -162,11 +162,10 @@
 
                     $res_output[$i][$k]['property'] = $properties[$k];
 
-                    for ($j = 0; $j < count($properties); $j++){
-
+                    for ($j = 0; $j < count($properties); $j++)
                         if ($csv_output[$i][$j]['property'] == $res_output[$i][$k]['property']) $res_output[$i][$k]['weight'] = $csv_output[$i][$j]['weight'];
-                    }
 
+                    if (!$res_output[$i][$k]['weight']) $res_output[$i][$k]['weight'] = 0;
                 }
             }
 
@@ -399,7 +398,7 @@
 
                 case "partial":     $precision = $this->partial['precision'] /= $this->partial['count'];
                                     $recall = $this->partial['recall'] /= $this->partial['count'];
-                                    $ndcg = $this->partial['ndcg'] /= $this->full['count'];
+                                    $ndcg = $this->partial['ndcg'] /= $this->partial['count'];
                                     break;
             }
 
@@ -417,11 +416,8 @@
 
                 $properties = explode("|", $headers[$i]);
 
-                for ($k = 0; $k < count($properties); $k++){
-
+                for ($k = 0; $k < count($properties); $k++)
                     $properties[$k] = substr($properties[$k], 0, -2);
-
-                }
 
                 $headers[$i] = implode("|", $properties);
             }

@@ -33,7 +33,7 @@
 		private $output;
 
 		// Output attributes.
-		public $message, $errlog, $status, $showprogress;
+		public $message, $errlog, $status, $showprogress, $header_count;
 
 		// Parameters and configuration attributes.
 		public $categ_k		= 0.6;
@@ -98,6 +98,7 @@
 		private function headerToArray(){
 
 			$harray = explode($this->separator, $this->header_string);
+			$this->header_count = count($harray);
 			foreach ($harray as $field) if ($field) $this->header_array['lemma'][] = $this->processCN($field);
 			
 			/*$exp_delimiter = explode($this->delimiter, $this->header_string);
