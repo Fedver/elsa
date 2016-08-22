@@ -45,7 +45,7 @@
 			
 			$this->service_name		= "ABSTAT";
 			$this->dataset			= "dbpedia-2015-10";
-			$this->url				= "http://abstat.cloudapp.net/api/v1/";
+			$this->url				= "http://abstat.disco.unimib.it/api/v1/";
 			$this->uri_basename		= "http://ld-summaries.org/resource/".$this->dataset;
 			$this->http				= new HttpRequest();
 			$this->properties		=

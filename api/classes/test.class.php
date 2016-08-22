@@ -29,7 +29,7 @@
 	class Test {
 		
 		// Internal service attributes.
-		private $conn;
+		private $conn, $init_time, $elab_time;
 
 		// Public attributes.
 		public $full, $partial;
@@ -255,14 +255,14 @@
 		
 		public function saveTestResults($header_id, $api_mapping, $where, $type){
 
-			$sql = "INSERT INTO test VALUES (NULL, ?, ?, ?, NOW(), ?)";
+			$sql = "INSERT INTO test VALUES (NULL, ?, ?, ?, NOW(), ?, ?)";
 			$stmt = $this->conn->prepare($sql);
 			if (!$stmt) {
 				$this->message	= "Error code 002: statement is not valid. ".$this->conn->error.$sql." [Test.saveTestResults]";
 				$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
 				$this->status	= FALSE;
 			}else{
-				$stmt->bind_param("isss", $this->conn->escape_string($header_id), $this->conn->escape_string($api_mapping), $this->conn->escape_string($where), $this->conn->escape_string($type));
+				$stmt->bind_param("isssi", $this->conn->escape_string($header_id), $this->conn->escape_string($api_mapping), $this->conn->escape_string($where), $this->conn->escape_string($type), $this->elab_time);
 				$stmt->execute();
 
 				if ($this->conn->affected_rows > 0){
@@ -294,9 +294,10 @@
 								"date"	=> array(),
 								"where"	=> array(),
 								"type"	=> array(),
+                                "elab_time" => array(),
 							);
 			
-			$sql = "SELECT gs.id, gs.headers, gs.gs_mapping, gs.lang, gs.descr, t.api_mapping, t.date, t.where, t.type FROM gold_standards AS gs
+			$sql = "SELECT gs.id, gs.headers, gs.gs_mapping, gs.lang, gs.descr, t.api_mapping, t.date, t.where, t.type, t.elab_time FROM gold_standards AS gs
 					INNER JOIN test as t on gs.id = t.id_header
 					ORDER BY t.date DESC";
 			$stmt = $this->conn->prepare($sql);
@@ -305,7 +306,7 @@
 				$this->errlog	.= "[".date("d-m-o H:i:s")."] ".$this->message."\n";
 				$this->status	= FALSE;
 			}else{
-				$stmt->bind_result($id, $headers, $mapping, $lang, $descr, $result, $date, $where, $type);
+				$stmt->bind_result($id, $headers, $mapping, $lang, $descr, $result, $date, $where, $type, $elab_time);
 				$stmt->execute();
 				while ($stmt->fetch()) {
 							$array_result['id'][] 	 = $id;
@@ -317,6 +318,7 @@
 							$array_result['date'][] 	 = $date;
 							$array_result['where'][] 	 = $where;
 							$array_result['type'][] 	 = $type;
+                            $array_result['elab_time'][] = $elab_time;
 				}	
 				$stmt->close();
 				
@@ -423,6 +425,20 @@
             }
 
             return implode(";", $headers);
+        }
+
+
+        public function setInitialTime(){
+
+            $this->init_time = time();
+
+        }
+
+
+        public function calcTime(){
+
+            $this->elab_time = time() - $this->init_time;
+
         }
 
 	} // End class.

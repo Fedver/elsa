@@ -57,6 +57,7 @@
 						   </tr>
 						  </table>
 						  <div>
+						   <b>Tempo di elaborazione:</b> '.$results['elab_time'][$i].' secondi<br />
 						   <b>Precision:</b> '.$precision.'<br />
 						   <b>Recall:</b> '.$recall.'<br />
 						   <b>F-Measure:</b> '.$fmeasure.'<br />

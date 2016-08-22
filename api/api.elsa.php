@@ -6,8 +6,9 @@
 
 		require("classes/parser.class.php");
 
+        $test->setInitialTime();
 		$p = new Parser($_REQUEST['header'], chr($_REQUEST['separator']), $_REQUEST['lang'], "EN");
-		$p->showMessages($show_notices);
+		$test->calcTime();
 
 		echo $p->getOutput();
 
