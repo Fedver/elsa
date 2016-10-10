@@ -337,29 +337,48 @@
                 if ($array_mapping[$i]) {
                     $array_mapping[$i] = array_filter(explode("|", $array_mapping[$i]));
                     $count_mapping += count($array_mapping[$i]);
+                    $arr_count_mapping[$i] = count($array_mapping[$i]);
                 }
             }
+
+            //$this->out($arr_count_mapping);
 
             $count_results = 0;
             $array_results = explode(";", $results);
             for ($i = 0; $i < count($array_results); $i++){
-                if ($array_results[$i]) {
-                    $array_results[$i] = array_filter(explode("|", $array_results[$i]));
-                    $count_results += count($array_results[$i]);
-                }
+                //if ($array_results[$i]) {
+                $array_results[$i] = array_filter(explode("|", $array_results[$i]));
+                $count_results += max(count($array_results[$i]), 1);
+                $arr_count_results[$i] = max(count($array_results[$i]), 1);
+                //}
             }
+
+            //$this->out($arr_count_results);
 
             $count_found = 0;
             for ($i = 0; $i < count($array_mapping); $i++){
                 for ($k = 0; $k < count($array_mapping[$i]); $k++) {
                     if (in_array($array_mapping[$i][$k], $array_results[$i])) {
                         $count_found += 1;
+                        $arr_count_found[$i] = +1;
                     }
                 }
             }
 
+            //$this->out($arr_count_found);
+
             $precision = $count_found / $count_results;
             $recall = $count_found / $count_mapping;
+
+            for ($i = 0; $i < count($arr_count_mapping); $i++){
+
+                $arr_precision[$i] = $arr_count_found[$i] / $arr_count_results[$i];
+                $arr_recall[$i] = $arr_count_found[$i] / $arr_count_mapping[$i];
+
+            }
+
+            $mean_precision = $this->arrayMean($arr_precision);
+            $mean_recall = $this->arrayMean($arr_recall);
 
 
             list($map_arr, $res_arr) = $this->parseWeightCSV($mapping, $results);
@@ -374,18 +393,23 @@
                                     $this->full['recall'] += $recall;
                                     $this->full['count'] ++;
                                     $this->full['ndcg'] += $ndcg;
+                                    $this->full['mean_precision'] += $mean_precision;
+                                    $this->full['mean_recall'] += $mean_recall;
                                     break;
 
                 case "partial":     $this->partial['precision'] += $precision;
                                     $this->partial['recall'] += $recall;
                                     $this->partial['count'] ++;
                                     $this->partial['ndcg'] += $ndcg;
+                                    $this->partial['mean_precision'] += $mean_precision;
+                                    $this->partial['mean_recall'] += $mean_recall;
                                     break;
             }
 
             $fmeasure = $this->FMeasure($precision, $recall);
+            $mean_fmeasure = $this->FMeasure($mean_precision, $mean_recall);
 
-            return array($precision, $recall, $fmeasure, $ndcg);
+            return array($precision, $recall, $fmeasure, $ndcg, $mean_precision, $mean_recall, $mean_fmeasure);
 
         }
 
@@ -396,17 +420,22 @@
                 case "full":        $precision = $this->full['precision'] /= $this->full['count'];
                                     $recall = $this->full['recall'] /= $this->full['count'];
                                     $ndcg = $this->full['ndcg'] /= $this->full['count'];
+                                    $mean_precision = $this->full['mean_precision'] /= $this->full['count'];
+                                    $mean_recall = $this->full['mean_recall'] /= $this->full['count'];
                                     break;
 
                 case "partial":     $precision = $this->partial['precision'] /= $this->partial['count'];
                                     $recall = $this->partial['recall'] /= $this->partial['count'];
                                     $ndcg = $this->partial['ndcg'] /= $this->partial['count'];
+                                    $mean_precision = $this->partial['mean_precision'] /= $this->partial['count'];
+                                    $mean_recall = $this->partial['mean_recall'] /= $this->partial['count'];
                                     break;
             }
 
             $fmeasure = $this->FMeasure($precision, $recall);
+            $mean_fmeasure = $this->FMeasure($mean_precision, $mean_recall);
 
-            return array($precision, $recall, $fmeasure, $ndcg);
+            return array($precision, $recall, $fmeasure, $ndcg, $mean_precision, $mean_recall, $mean_fmeasure);
         }
 
 

@@ -26,13 +26,13 @@
 			<?php 
 			for ($i= 0; $i < count($results['id']); $i++){
 
-				list($precision, $recall, $fmeasure, $ndcg) = $test->calcIndicators($results['mapping'][$i], $results['result'][$i], $results['type'][$i]);
+				list($precision, $recall, $fmeasure, $ndcg, $mean_precision, $mean_recall, $mean_fmeasure) = $test->calcIndicators($results['mapping'][$i], $results['result'][$i], $results['type'][$i]);
 					
 				echo '<div class="panel panel-default">
 						<div class="panel-heading">
 						  <h4 class="panel-title">
 							<a data-toggle="collapse" data-parent="#accordion" href="#collapse'.$i.'">
-							<b>'.$results['titolo'][$i].'</b> '.$results['lingua'][$i].' <b>('.$results['type'][$i].')</b> il '.$results['date'][$i].' by '.$results['where'][$i].'
+							<b>'.$results['titolo'][$i].'</b> '.$results['lingua'][$i].' <b>('.$results['type'][$i].')</b> on '.$results['date'][$i].' by '.$results['where'][$i].'
 							</a>
 						  </h4>
 						</div>
@@ -57,11 +57,14 @@
 						   </tr>
 						  </table>
 						  <div>
-						   <b>Tempo di elaborazione:</b> '.$results['elab_time'][$i].' secondi<br />
-						   <b>Precision:</b> '.$precision.'<br />
-						   <b>Recall:</b> '.$recall.'<br />
-						   <b>F-Measure:</b> '.$fmeasure.'<br />
-						   <b>nDCG medio:</b> '.$ndcg.'<br />
+						   <b>Elab time:</b> '.$results['elab_time'][$i].' seconds<br />
+						   <b>Table Precision:</b> '.$precision.'<br />
+						   <b>Table recall:</b> '.$recall.'<br />
+						   <b>Table F-Measure:</b> '.$fmeasure.'<br />
+						   <b>Mean of column precision:</b> '.$mean_precision.'<br />
+						   <b>Mean of column recall:</b> '.$mean_recall.'<br />
+						   <b>Mean of column F-Measure:</b> '.$mean_fmeasure.'<br />
+						   <b>Mean nDCG:</b> '.$ndcg.'<br />
 						  </div>
 						 </div>
 						</div>
@@ -70,22 +73,28 @@
 			?>
 		</div>
 		<?php
-			list($final_precision_full, $final_recall_full, $final_fmeasure_full, $final_ndcg_full) = $test->getFinalEvaluation("full");
-			list($final_precision_part, $final_recall_part, $final_fmeasure_part, $final_ndcg_part) = $test->getFinalEvaluation("partial");
+			list($final_precision_full, $final_recall_full, $final_fmeasure_full, $final_ndcg_full, $final_mean_precision_full, $final_mean_recall_full, $final_mean_fmeasure_full) = $test->getFinalEvaluation("full");
+			list($final_precision_part, $final_recall_part, $final_fmeasure_part, $final_ndcg_part, $final_mean_precision_part, $final_mean_recall_part, $final_mean_fmeasure_part) = $test->getFinalEvaluation("partial");
 		?>
-		Medie (full):<br />
+		Mean values (ELSA):<br />
 		<div>
-			<b>Precision:</b> <?php echo $final_precision_full; ?><br />
-			<b>Recall:</b> <?php echo $final_recall_full; ?><br />
-			<b>F-Measure:</b> <?php echo $final_fmeasure_full; ?><br />
-			<b>nDCG:</b> <?php echo $final_ndcg_full; ?><br />
+			<b>Table precision:</b> <?php echo $final_precision_full; ?><br />
+			<b>Table recall:</b> <?php echo $final_recall_full; ?><br />
+			<b>Table F-Measure:</b> <?php echo $final_fmeasure_full; ?><br />
+			<b>Mean of column precision:</b> <?php echo $final_mean_precision_full; ?><br />
+			<b>Mean of column recall:</b> <?php echo $final_mean_recall_full; ?><br />
+			<b>Mean of column F-Measure:</b> <?php echo $final_mean_fmeasure_full; ?><br />
+			<b>Mean nDCG:</b> <?php echo $final_ndcg_full; ?><br />
 		</div>
-		<br />Medie (partial):<br />
+		<br />Mean values (baseline):<br />
 		<div>
-			<b>Precision:</b> <?php echo $final_precision_part; ?><br />
-			<b>Recall:</b> <?php echo $final_recall_part; ?><br />
-			<b>F-Measure:</b> <?php echo $final_fmeasure_part; ?><br />
-			<b>nDCG:</b> <?php echo $final_ndcg_part; ?><br />
+			<b>Table precision:</b> <?php echo $final_precision_part; ?><br />
+			<b>Table recall:</b> <?php echo $final_recall_part; ?><br />
+			<b>Table F-Measure:</b> <?php echo $final_fmeasure_part; ?><br />
+			<b>Mean of column precision:</b> <?php echo $final_mean_precision_part; ?><br />
+			<b>Mean of column recall:</b> <?php echo $final_mean_recall_part; ?><br />
+			<b>Mean of column F-Measure:</b> <?php echo $final_mean_fmeasure_part; ?><br />
+			<b>Mean nDCG:</b> <?php echo $final_ndcg_part; ?><br />
 		</div>
     </body>
 </html>

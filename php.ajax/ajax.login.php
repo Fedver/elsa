@@ -5,7 +5,7 @@
 	include("../classes/mysqli.connect.php");
 	include("../classes/registration.class.php");
 
-	$account = new Account($mysqli);
+	$account = new Registration($mysqli);
 
 	if ($_REQUEST['email'] && $_REQUEST['pass']){
 		

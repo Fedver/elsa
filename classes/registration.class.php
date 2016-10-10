@@ -25,6 +25,8 @@
 
 	*/
 
+    require_once "../thirdparty/random_compat/lib/random.php";
+
 	
 	class Registration {
 		
@@ -195,7 +197,7 @@
 				if ($this->verifyEmail($email)){
 
 					$hash_password = sha1($pass);
-					$hash_key = sha1($hash_password.$email.time().mt_rand());
+					$hash_key = sha1($hash_password.$email.time().random_int(0, PHP_INT_MAX));
 					
 					$sql = "INSERT INTO users VALUES (NULL, ?, ?, NOW(), ?)";
 					$stmt = $this->conn->prepare($sql);

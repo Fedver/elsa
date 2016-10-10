@@ -38,7 +38,7 @@
 		// Parameters and configuration attributes.
 		public $categ_k		= 0.6;
 		public $domain_k	= 0.4;
-		public $threshold_k	= 0.1;
+		public $threshold_k	= 0.3;
 
 
 		//////////////////////////////////////////////////////////////////////////////////////////

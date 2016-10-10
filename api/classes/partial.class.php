@@ -76,7 +76,7 @@
 					$this->retrieveMapping();
 					$this->buildOutput();
 
-					$this->out($this->output);
+					//$this->out($this->output);
 				}
 			}else{
 				$msg->log("002", __METHOD__, "header, separator, source_lang, dest_lang");
@@ -99,7 +99,7 @@
 
 			$harray = explode($this->separator, $this->header_string);
 			$this->header_count = count($harray);
-			foreach ($harray as $field) if ($field) $this->header_array['lemma'][] = $this->processCN($field);
+			foreach ($harray as $field) if ($field) $this->header_array['lemma'][] = $this->processCN(trim(iconv(mb_detect_encoding($field), "UTF-8//TRANSLIT", $field)));
 			
 			/*$exp_delimiter = explode($this->delimiter, $this->header_string);
 
@@ -110,6 +110,8 @@
 				foreach ($exp_separator as $field) if ($field) $this->header_array[] = $field;
 
 			}*/
+
+			//$this->out($this->header_array);
 		}
 
 
@@ -132,7 +134,7 @@
 				}
 			}
 
-			return trim(strtolower($output));
+			return trim($output);
 
 		}
 
@@ -173,7 +175,7 @@
 				}
 			}
 
-			$this->out($this->header_array);
+			//$this->out($this->header_array);
 		}
 
 

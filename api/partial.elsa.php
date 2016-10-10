@@ -6,8 +6,9 @@
 
 		require("classes/partial.class.php");
 
-		$p = new Partial($_REQUEST['header'], chr($_REQUEST['separator']), strtolower($_REQUEST['lang']), "en");
-		$p->showMessages($show_notices);
+        $test->setInitialTime();
+        $p = new Partial($_REQUEST['header'], chr($_REQUEST['separator']), strtolower($_REQUEST['lang']), "en");
+        $test->calcTime();
 
 		echo $p->getOutput();
 

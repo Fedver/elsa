@@ -247,14 +247,13 @@
 
 
 		// Perform a translation request to retrieve a single translation.
-		public function translateMany($word, $source_lang, $dest_lang, $max=10, $domain="general"){
+		public function translateMany($word, $source_lang, $dest_lang, $max=10){
 			
 			$paramArr = array (
 									 'text'				=> $word,
 									 'from'				=> $source_lang,
 									 'to'				=> $dest_lang,
 									 'maxTranslations'	=> $max
-									 /*'options'			=> "{'Category': '".$domain."'}"*/
             );
 			$paramArr = http_build_query($paramArr);
 
